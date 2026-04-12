@@ -4,9 +4,9 @@ import { Star, MapPin } from "lucide-react";
 import DestinationCard  from "../card/DestinationCard";
 const Destinations = () => {
   return (
-    <div className="min-h-[1366px] w-full flex items-center justify-between flex-col pt-[96px]">
-      <div className="w-full container min-h-[200px] flex items-center justify-center ">
-        <div className="min-h-[150px] flex flex-col items-center justify-between  ">
+    <div className="w-full flex items-center justify-between flex-col py-[96px]">
+      <div className="w-full container  flex items-center justify-center">
+        <div className="flex flex-col items-center justify-between">
           <div className="inline-block text-[rgb(13,162,231)] font-[600] text-xs uppercase tracking-[0.25em] px-4 py-1.5 rounded-full bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 mb-3">
             TOP DESTINATIONS
           </div>
@@ -35,7 +35,7 @@ const Destinations = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container px-24   my-[40px] auto-rows-[275px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container px-24  my-[40px] auto-rows-[275px]">
         {/* BIG ITEM (spans 2 rows only on desktop) */}
         <div className=" lg:row-span-2">
           <DestinationCard
@@ -121,7 +121,30 @@ const Destinations = () => {
         </div>
       </div>
 
-      <div className="border border-black h-[500px]"></div>
+      <button className="inline-flex items-center justify-center gap-2.5 group cursor-pointer px-8 py-3.5 text-[rgb(13,162,231)] rounded-2xl border-2 border-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300">
+        View all Destinations
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
+        >
+          <path
+            d="M5 12h14"
+            
+          ></path>
+          <path
+            d="m12 5 7 7-7 7"
+            
+          ></path>
+        </svg>
+      </button>
     </div>
   );
 };
