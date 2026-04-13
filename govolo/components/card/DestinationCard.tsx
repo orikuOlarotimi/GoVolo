@@ -40,7 +40,7 @@ export default function DestinationCard({
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t "></div>
+      <div className="absolute inset-0 bg-gradient-to-t"></div>
 
       {/* Label */}
       {label && (
@@ -65,10 +65,10 @@ export default function DestinationCard({
       )}
 
       {/* Rating */}
-      <div className="absolute top-4 right-4 flex items-center gap-1 bg-white/90 text-black text-sm px-2 py-1 rounded-full">
+      <div className="absolute top-4 right-4 flex items-center gap-1 bg-black/30 text-white text-sm px-2.5 py-1 backdrop-blur-sm rounded-full font-bold">
         <Star size={14} className="fill-yellow-400 text-yellow-400" />
         {rating}
-      </div>
+      </div>    
 
       {/* Bottom Content */}
       <div className="absolute bottom-6 left-0 text-white flex items-center gap-3 justify-between w-full px-5 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">

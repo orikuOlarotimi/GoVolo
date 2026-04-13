@@ -128,9 +128,7 @@ const Destinations = () => {
             rating={5}
             label="Adventure"
             height="h-full"
-            desc="Glaciers, ski slopes & alpine villages
-
-"
+            desc="Glaciers, ski slopes & alpine villages"
           />
         </div>
       </div>
