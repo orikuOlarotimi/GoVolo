@@ -15,6 +15,7 @@ interface TravelCardProps {
   buttonText?: string;
   buttonColor?: string;
   backgroundColor?: string;
+  tag?: string;
 }
 
 const TravelCard: React.FC<TravelCardProps> = ({
@@ -28,9 +29,10 @@ const TravelCard: React.FC<TravelCardProps> = ({
   features,
   buttonText = "Book Now",
   backgroundColor,
+  tag,
 }) => {
   return (
-    <div className="w-full rounded-3xl overflow-hidden shadow-lg bg-white">
+    <div className="w-full rounded-3xl overflow-hidden shadow-lg bg-white hover:-translate-y-2 transition-all duration-300 hover:shadow-xl hover:border border-[rgb(56,189,248)]">
       {/* Top Section */}
       <div
         className={`${
@@ -38,10 +40,12 @@ const TravelCard: React.FC<TravelCardProps> = ({
         } text-white p-6 relative pb-10`}
       >
         {label && (
-          <p className="text-xs uppercase tracking-wide opacity-80">{label}</p>
+          <p className="text-xs uppercase tracking-wide  text-white/70 ">
+            {label}
+          </p>
         )}
 
-        <h2 className="text-2xl font-bold mt-1">{title}</h2>
+        <h2 className="text-2xl font-[700] mt-1 text-[24px] ">{title}</h2>
 
         <div className="mt-4 flex items-end gap-2">
           <span className="text-4xl font-bold">${price}</span>
@@ -50,6 +54,31 @@ const TravelCard: React.FC<TravelCardProps> = ({
 
         {/* Curved bottom */}
         <div className="absolute bottom-0 left-0 w-full pt-5 bg-white rounded-t-[2rem]" />
+        {tag && (
+          <div className="absolute top-4 right-4">
+            <span className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1 rounded-full border border-white/30">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                className="lucide lucide-sparkles h-3 w-3"
+              >
+                <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+                <path d="M20 3v4"></path>
+                <path d="M22 5h-4"></path>
+                <path d="M4 17v2"></path>
+                <path d="M5 18H3"></path>
+              </svg>
+              {tag}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Info Row */}

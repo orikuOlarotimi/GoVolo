@@ -29,7 +29,7 @@ const Destinations = () => {
             </span>
           </h2>
 
-          <p className="text-[18px] mt-4  text-[rgb(101,117,139)] font-[500]">
+          <p className="text-[18px] mt-4  text-[rgb(101,117,139)] font-[500] text-center">
             Handpicked locations for unforgettable experiences around the globe
           </p>
         </div>
@@ -45,6 +45,7 @@ const Destinations = () => {
             rating={4.9}
             label="Trending"
             height="h-full"
+            desc="Temples, rice terraces & pristine beaches"
           />
         </div>
 
@@ -57,6 +58,7 @@ const Destinations = () => {
             rating={4.8}
             label="Most Loved"
             height="h-full"
+            desc="Romance, art & world-class cuisine"
           />
         </div>
         <div className="">
@@ -67,6 +69,7 @@ const Destinations = () => {
             rating={4.7}
             label="Scenic"
             height="h-full"
+            desc="Iconic sunsets & whitewashed villages"
           />
         </div>
         <div className="">
@@ -77,6 +80,9 @@ const Destinations = () => {
             rating={4.9}
             label="Top Pick"
             height="h-full"
+            desc="Ancient tradition meets futuristic energy
+
+"
           />
         </div>
         <div className="">
@@ -87,6 +93,7 @@ const Destinations = () => {
             rating={5}
             label="Luxury"
             height="h-full"
+            desc="Overwater villas & crystal-clear lagoons"
           />
         </div>
         <div className="">
@@ -97,6 +104,9 @@ const Destinations = () => {
             rating={4.8}
             label="Adventure"
             height="h-full"
+            desc="Glaciers, ski slopes & alpine villages
+
+"
           />
         </div>
         <div className="">
@@ -107,6 +117,7 @@ const Destinations = () => {
             rating={4.9}
             label="Adventure"
             height="h-full"
+            desc="Glaciers, ski slopes & alpine villages"
           />
         </div>
         <div className="">
@@ -117,6 +128,9 @@ const Destinations = () => {
             rating={5}
             label="Adventure"
             height="h-full"
+            desc="Glaciers, ski slopes & alpine villages
+
+"
           />
         </div>
       </div>
@@ -135,14 +149,8 @@ const Destinations = () => {
           stroke-linejoin="round"
           className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
         >
-          <path
-            d="M5 12h14"
-            
-          ></path>
-          <path
-            d="m12 5 7 7-7 7"
-            
-          ></path>
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
         </svg>
       </button>
     </div>

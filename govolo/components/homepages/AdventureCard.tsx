@@ -51,8 +51,8 @@ const AdventureCard = () => {
           ]}
         />
         <TravelCard
-          label="Maldives, Thailand"
-          title="Beach Paradise"
+          label="Swiss Alps, Norway"
+          title="Mountain Adventure"
           price={699}
           duration="7 Days"
           rating={4.8}
@@ -65,10 +65,11 @@ const AdventureCard = () => {
             "Equipment Provided",
           ]}
           backgroundColor="bg-gradient-to-br from-[rgb(13,162,231)] to-[rgb(13,162,231)]/70"
+          tag="Most Popular"
         />
         <TravelCard
-          label="Maldives, Thailand"
-          title="Beach Paradise"
+          label="Paris, Tokyo, NYC"
+          title="City Explorer"
           price={399}
           duration="4 Days"
           rating={4.8}
@@ -76,6 +77,7 @@ const AdventureCard = () => {
           people="1–3"
           features={["Boutique Hotel", "City Tours", "Breakfast", "Metro Pass"]}
           backgroundColor="bg-gradient-to-br from-violet-400 to-purple-600"
+          tag="Best Value"
         />
       </div>
 
