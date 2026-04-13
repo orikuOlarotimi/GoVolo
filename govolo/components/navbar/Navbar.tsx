@@ -74,7 +74,7 @@ export default function Navbar() {
           <Plane
             className={`h-6 w-6 ${isScrolled ? "text-teal-500" : "text-white"}`}
           />
-          <span className="text-2xl font-bold tracking-tight">Travelix</span>
+          <span className="text-2xl font-bold tracking-tight">GoVolo</span>
         </Link>
 
         {/* Desktop Links */}

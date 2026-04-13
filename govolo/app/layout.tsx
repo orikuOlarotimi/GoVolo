@@ -21,7 +21,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Travelix - Travel Booking Platform",
+  title: "GoVolo - Travel Booking Platform",
   description: "Explore the world with ease.",
 };
 
