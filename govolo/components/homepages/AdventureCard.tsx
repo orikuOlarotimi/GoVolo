@@ -1,9 +1,9 @@
-import React from 'react'
-import TravelCard from '../card/TravelCard';
+import React from "react";
+import TravelCard from "../card/TravelCard";
 
 const AdventureCard = () => {
   return (
-    <div className="w-full flex items-center justify-between flex-col py-[96px] bg-muted/50">
+    <div className="w-full flex items-center justify-between flex-col py-[96px] bg-muted/50 px-6">
       <div className="w-full container flex items-center justify-center mb-[64px]">
         <div className="flex flex-col items-center justify-between  ">
           <div className="inline-block text-[rgb(13,162,231)] font-[600] text-xs uppercase tracking-[0.25em] px-4 py-1.5 rounded-full bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 mb-3">
@@ -91,6 +91,6 @@ const AdventureCard = () => {
       </div>
     </div>
   );
-}
+};
 
-export default AdventureCard
+export default AdventureCard;

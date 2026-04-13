@@ -4,7 +4,7 @@ import { Star, MapPin } from "lucide-react";
 import DestinationCard  from "../card/DestinationCard";
 const Destinations = () => {
   return (
-    <div className="w-full flex items-center justify-between flex-col py-[96px]">
+    <div className="w-full flex items-center justify-between flex-col py-[96px] px-6 ">
       <div className="w-full container  flex items-center justify-center">
         <div className="flex flex-col items-center justify-between">
           <div className="inline-block text-[rgb(13,162,231)] font-[600] text-xs uppercase tracking-[0.25em] px-4 py-1.5 rounded-full bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 mb-3">
@@ -35,7 +35,7 @@ const Destinations = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container px-24  my-[40px] auto-rows-[275px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container  my-[40px] auto-rows-[280px] max-w-7xl">
         {/* BIG ITEM (spans 2 rows only on desktop) */}
         <div className=" lg:row-span-2">
           <DestinationCard
