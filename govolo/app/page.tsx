@@ -3,6 +3,7 @@ import Destinations from "@/components/homepages/Destinations";
 import AdventureCard from "@/components/homepages/AdventureCard";
 import Features from "@/components/homepages/Features";
 import Testimonials from "@/components/homepages/Testimonials";
+import Blog from "@/components/homepages/Blog";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <AdventureCard />
       <Features />
       <Testimonials />
+      <Blog/>
     </div>
   );
 }
