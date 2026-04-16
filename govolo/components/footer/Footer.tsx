@@ -52,7 +52,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-6 group">
               <Plane className="h-6 w-6 text-teal-500" />
               <span className="text-white text-2xl font-bold tracking-tight">
-                Travelix
+                GoVolo
               </span>
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed mb-6">
@@ -209,7 +209,7 @@ export default function Footer() {
                     href="mailto:hello@travelix.com"
                     className="hover:text-teal-400 transition-colors"
                   >
-                    hello@travelix.com
+                    hello@govolo.com
                   </a>
                 </div>
               </li>
@@ -218,10 +218,10 @@ export default function Footer() {
                 <div>
                   <p className="font-medium text-white">Phone</p>
                   <a
-                    href="tel:+15551234567"
+                    href="tel:+234801234567"
                     className="hover:text-teal-400 transition-colors"
                   >
-                    +1 (555) 123-4567
+                    +234 801-234-5678
                   </a>
                 </div>
               </li>
@@ -236,7 +236,7 @@ export default function Footer() {
                 <Globe className="h-5 w-5 text-teal-500 mt-0.5 shrink-0" />
                 <div>
                   <p className="font-medium text-white">Working Hours</p>
-                  <p>Mon-Fri: 9AM - 6PM EST</p>
+                  <p>Mon-Fri: 9AM - 6PM WAT</p>
                 </div>
               </li>
             </ul>
@@ -246,7 +246,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <p>
-            © 2026 Travelix. Made with <span className="text-red-500">❤</span>{" "}
+            © 2026 Govolo. Made with <span className="text-red-500">❤</span>{" "}
             for travelers
           </p>
           <div className="flex items-center gap-6">

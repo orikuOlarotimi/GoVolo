@@ -135,5 +135,6 @@ body {
 
 h1, h2, h3, h4, h5, h6,
 .font-heading {
-  font-family: var(--font-playfair), ui-serif, Georgia, serif;
+  font-family: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  /* font-family: var(--font-playfair), ui-serif, Georgia, serif; */
 }
