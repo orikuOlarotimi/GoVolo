@@ -4,6 +4,8 @@ import AdventureCard from "@/components/homepages/AdventureCard";
 import Features from "@/components/homepages/Features";
 import Testimonials from "@/components/homepages/Testimonials";
 import Blog from "@/components/homepages/Blog";
+import CTA from "@/components/homepages/CTA";
+import Contact from "@/components/homepages/Contact";
 
 export default function Home() {
   return (
@@ -13,7 +15,9 @@ export default function Home() {
       <AdventureCard />
       <Features />
       <Testimonials />
-      <Blog/>
+      <Blog />
+      <CTA />
+      <Contact />
     </div>
   );
 }

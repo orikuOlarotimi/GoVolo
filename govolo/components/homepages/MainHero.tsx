@@ -29,8 +29,20 @@ export default function Hero() {
         {/* Headlines */}
         <h1 className="text-5xl md:text-7xl font-bold text-white text-center leading-tight mb-6 tracking-tight">
           Explore the World <br />
-          <span className="font-playfair italic text-[#ffb703] font-semibold">
+          <span className="text-[#ffb703] font-semibold relative inline-block">
             with Ease
+            <svg
+                className="absolute -bottom-1 left-0 w-full text-[#ffb703]"
+                viewBox="0 0 300 8"
+                fill="none"
+              >
+                <path
+                  d="M1 5.5 Q75 1 150 5.5 Q225 10 299 5.5"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg>
           </span>
         </h1>
 
