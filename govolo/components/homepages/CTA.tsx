@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function CTA() {
   return (
     <section className="bg-white">
-      <div className="max-w-full mx-auto relative overflow-hidden bg-linear-to-br from-[#15b7cd] to-[#288dda] shadow-2xl py-20 px-20 md:px-16 flex flex-col items-center justify-center text-center">
+      <div className="max-w-full mx-auto relative overflow-hidden bg-linear-to-br from-[#15b7cd] to-[#288dda] shadow-2xl py-20 px-6 md:px-16 flex flex-col items-center justify-center text-center">
         {/* Abstract Background Patterns (Optional SVG Overlays could go here) */}
         <div
           className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"
