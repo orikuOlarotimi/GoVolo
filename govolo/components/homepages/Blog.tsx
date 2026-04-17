@@ -38,7 +38,7 @@ const Blog = () => {
       <div className="container max-w-7xl">
         <div className="w-full flex justify-between items-center mb-16  flex-col sm:flex-row">
           <div className="">
-            <span className=" inline-block mb-3 px-4 py-1.5 bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 rounded-full font-semibold text-xs tracking-[0.25em]  text-[rgb(13,162,231)]  ">
+            <span className="inline-block mb-3 px-4 py-1.5 bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 rounded-full font-semibold text-xs tracking-[0.25em]  text-[rgb(13,162,231)]  ">
               OUR BLOG
             </span>
             <h2 className="mt-2 text-left text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-[700] mb-[16px] ">
@@ -93,7 +93,11 @@ const Blog = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-[rgb(13,162,231)]/20 via-transparent to-transparent opacity-0  group-hover:opacity-100 transition-opacity duration-500"></div>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+              {/* start of main elements */}
               <div className="absolute w-full top-5 px-6 flex items-center justify-between">
+
+
                 <span className="inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-orange-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-lg">
                   {first.tag}
                 </span>
@@ -101,8 +105,9 @@ const Blog = () => {
                   {first.tagStatus}
                 </span>
               </div>
-              <div className="absolute bottom-5 w-full px-6">
-                <div className=" w-full mb-3 flex items-center gap-4">
+
+              <div className="absolute bottom-5 md:bottom-2 lg:bottom-5 w-full px-6">
+                <div className=" w-full mb-3  md:mb-1 lg:mb-3 flex items-center gap-4">
                   <span className="flex items-center gap-1.5 text-white/60 text-xs">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -142,10 +147,10 @@ const Blog = () => {
                     {first.time} read
                   </span>
                 </div>
-                <h1 className="font-heading font-bold text-white text-2xl md:text-3xl leading-tight mb-3 group-hover:text-[rgb(13,162,231)]/90 transition-colors duration-300">
+                <h1 className="font-heading font-bold text-white text-2xl md:text-[17px] lg:text-3xl leading-tight mb-3 md:mb-1 lg:mb-3  group-hover:text-[rgb(13,162,231)]/90 transition-colors duration-300">
                   {first.title}
                 </h1>
-                <p className="mb-5 max-w-lg text-white/65 text-sm leading-relaxed">
+                <p className="mb-5 md:mb-1 lg:mb-5 max-w-lg  text-white/65 text-sm leading-relaxed md:leading-[1.2] lg:leading-relaxed">
                   {first.para}
                 </p>
 

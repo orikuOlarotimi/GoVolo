@@ -6,6 +6,7 @@ import Testimonials from "@/components/homepages/Testimonials";
 import Blog from "@/components/homepages/Blog";
 import CTA from "@/components/homepages/CTA";
 import Contact from "@/components/homepages/Contact";
+import Newsletter from "@/components/homepages/Newsletter";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <Blog />
       <CTA />
       <Contact />
+      <Newsletter/>
     </div>
   );
 }

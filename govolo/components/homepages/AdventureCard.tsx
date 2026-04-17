@@ -34,7 +34,7 @@ const AdventureCard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6  max-w-5xl mx-auto container ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  max-w-5xl mx-auto container ">
         <TravelCard
           label="Maldives, Thailand"
           title="Beach Paradise"
