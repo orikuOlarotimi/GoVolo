@@ -1,7 +1,24 @@
+"use client";
+import { useEffect, useState } from "react";
 import { Star, MapPin, Calendar, Users, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Hero() {
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkZoom = () => setIsZoomed(window.devicePixelRatio > 1);
+
+    checkZoom();
+    window.addEventListener("resize", checkZoom);
+    return () => window.removeEventListener("resize", checkZoom);
+  }, []);
+
+  const badgeBaseClasses =
+    "absolute items-center gap-1 bg-white/20 backdrop-blur-md border border-white/30 px-4 py-2 rounded-full text-white text-sm font-medium shadow-lg";
+
   return (
     <div className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-12">
       {/* Background Image & Overlay */}
@@ -15,6 +32,29 @@ export default function Hero() {
         {/* Dark gradient overlay to ensure text readability */}
         <div className="absolute inset-0 bg-black/40 bg-linear-to-b from-black/60 via-transparent to-black/30" />
       </div>
+
+       {/* Floating Badges (Hidden on very small screens for cleanliness)
+           Hidden completely if browser zoom is above 100% */}
+        <div className={`${isZoomed ? "hidden" : "hidden lg:flex"} top-46 left-16 ${badgeBaseClasses}`}>
+          <div className="bg-yellow-400 p-1 rounded-full">
+            <MapPin className="h-3 w-3 fill-white text-white" />
+          </div>
+          500+ Destinations
+        </div>
+
+        <div className={`${isZoomed ? "hidden" : "hidden lg:flex"} top-46 right-6 ${badgeBaseClasses}`}>
+          <div className="bg-blue-400 p-1 rounded-full">
+            <Star className="h-3 w-3 text-white" />
+          </div>
+          4.6 Avg Rating
+        </div>
+
+        <div className={`${isZoomed ? "hidden" : "hidden lg:flex"} bottom-42 left-16 ${badgeBaseClasses}`}>
+          <div className="bg-green-400 p-1 rounded-full">
+            <Users className="h-3 w-3 text-white" />
+          </div>
+          50K+ Travelers
+        </div>
 
       {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center mt-12">
