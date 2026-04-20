@@ -15,7 +15,7 @@ const Loader = () => {
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-blue-500 pointer-events-auto  z-[9999]">
       <div className="flex flex-col items-center justify-between max-h-34 h-full max-w-[164px] w-full">
-        <Plane className="text-white w-20 h-20  animate-[bounce_2s_infinite]" />
+        <Plane className="text-white w-17 h-17  animate-[bounce_2s_infinite]" />
         <h2 className="text-center text-white font-bold text-[18px]">GoVolo</h2>
         <div className="w-full h-2 bg-white/30 rounded-full overflow-hidden animate-pulse">
           {/* Animated Bar */}
