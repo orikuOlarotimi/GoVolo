@@ -11,9 +11,9 @@ export default function ScenePanel() {
 
       <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(7,21,38,0.88)_0%,rgba(7,21,38,0.62)_35%,rgba(7,21,38,0.15)_65%,transparent_100%)]" />
 
-      <div className=" relative z-10   min-h-[580px] flex flex-col justify-between mr-[120px]">
+      <div className=" relative z-10   min-h-[560px] flex flex-col justify-between mr-[120px]">
         {/* brand */}
-        <div className="relative z-10 flex items-center gap-2.5 text-xl font-bold font-[Plus_Jakarta_Sans,sans-serif]">
+        <div className="relative z-10 flex items-center gap-2.5 text-xl font-bold font-[Plus_Jakarta_Sans,sans-serif] mb-[20px]">
           <Plane className="h-full w-6  text-white" />
           GoVolo
         </div>
@@ -82,7 +82,7 @@ export default function ScenePanel() {
           </div>
         </div>
 
-        <div className="relative z-10 text-[12.5px] text-white">
+        <div className="relative z-10 text-[12.5px] text-white mt-[20px]">
           © 2026 GoVolo. Wander further.
         </div>
       </div>
