@@ -11,7 +11,7 @@ export default function ScenePanel() {
 
       <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(7,21,38,0.88)_0%,rgba(7,21,38,0.62)_35%,rgba(7,21,38,0.15)_65%,transparent_100%)]" />
 
-      <div className=" relative z-10  max-h-[620px]  h-full flex flex-col justify-between mr-[120px]">
+      <div className=" relative z-10   min-h-[580px] flex flex-col justify-between mr-[120px]">
         {/* brand */}
         <div className="relative z-10 flex items-center gap-2.5 text-xl font-bold font-[Plus_Jakarta_Sans,sans-serif]">
           <Plane className="h-full w-6  text-white" />
@@ -65,9 +65,9 @@ export default function ScenePanel() {
           </div>
 
           <div className="mt-[46px] max-w-[400px] rounded-[22px] p-[20px_22px] ">
-            <p className="mb-3.5 text-sm leading-[1.6] text-white/85">
+            <p className="mb-3.5 text-sm leading-[1.6] text-white">
               &ldquo;Booked Santorini in under five minutes. Travelix remembered
-              my preferences from the last trip — genuinely felt
+              my preferences from the last trip, genuinely felt
               effortless.&rdquo;
             </p>
             <div className="flex items-center gap-2.5">
