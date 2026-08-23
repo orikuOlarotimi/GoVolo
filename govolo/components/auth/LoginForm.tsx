@@ -16,7 +16,7 @@ export default function LoginForm({
   }
 
   return (
-    <section className="animate-[fade-in_0.35s_ease]">
+    <section className="animate-[fade-in_0.5s_ease] font-[Plus_Jakarta_Sans,sans-serif]">
       <div>
         <h1 className="font-[Plus_Jakarta_Sans,sans-serif] text-[26px] font-extrabold tracking-[-0.02em]">
           Welcome back
