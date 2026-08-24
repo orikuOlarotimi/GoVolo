@@ -30,7 +30,7 @@ export default function LoginForm({
       <div className="my-[26px] grid grid-cols-2 gap-2.5">
         <button
           type="button"
-          className="flex items-center justify-center gap-2 rounded-[14px] border border-[#e7ecf3] bg-white px-2.5 py-[11px] text-[13.5px] font-semibold text-[#10192b] transition-all hover:-translate-y-px hover:border-[#c7d2e0]"
+          className="flex items-center justify-center gap-2 rounded-[14px] cursor-pointer border border-[#e7ecf3] bg-white px-2.5 py-[11px] text-[13.5px] font-semibold text-[#10192b] transition-all hover:-translate-y-px hover:border-[#c7d2e0]"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4">
             <path
@@ -42,7 +42,7 @@ export default function LoginForm({
         </button>
         <button
           type="button"
-          className="flex items-center justify-center gap-2 rounded-[14px] border border-[#e7ecf3] bg-white px-2.5 py-[11px] text-[13.5px] font-semibold text-[#10192b] transition-all hover:-translate-y-px hover:border-[#c7d2e0]"
+          className="flex items-center justify-center gap-2 cursor-pointer rounded-[14px] border border-[#e7ecf3] bg-white px-2.5 py-[11px] text-[13.5px] font-semibold text-[#10192b] transition-all hover:-translate-y-px hover:border-[#c7d2e0]"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4">
             <path

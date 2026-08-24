@@ -41,7 +41,7 @@ export default function LoginPage() {
           <div
             role="tablist"
             aria-label="Authentication mode"
-            className="relative mb-[30px] grid grid-cols-2 gap-1 rounded-full border border-[#e7ecf3] bg-[#f7f9fc] p-1"
+            className="relative mb-[30px] grid grid-cols-2 gap-1 rounded-full border border-[#e7ecf3] bg-[#f7f9fc] p-1 d-2"
           >
             {/* Sliding active background */}
             <div
@@ -54,7 +54,7 @@ export default function LoginPage() {
               role="tab"
               aria-selected={mode === "login"}
               onClick={() => setMode("login")}
-              className={`relative z-10 rounded-full py-2.5 text-sm font-semibold transition-colors duration-300 ${
+              className={`relative z-10 rounded-full py-2.5  cursor-pointer text-sm font-semibold transition-colors duration-300 ${
                 mode === "login" ? "text-white" : "text-[#64748b]"
               }`}
             >
@@ -65,13 +65,13 @@ export default function LoginPage() {
               role="tab"
               aria-selected={mode === "signup"}
               onClick={() => setMode("signup")}
-              className={`relative z-10 rounded-full py-2.5 text-sm font-semibold transition-colors duration-300 ${
+              className={`relative z-10 rounded-full py-2.5 text-sm font-semibold cursor-pointer transition-colors duration-300 ${
                 mode === "signup" ? "text-white" : "text-[#64748b]"
               }`}
             >
               Sign up
             </button>
-          </div>
+          </div> 
 
           {mode === "login" ? (
             <LoginForm onSwitchToSignup={() => setMode("signup")} />
