@@ -10,6 +10,15 @@ export default function SignupForm({
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [gender, setGender] = useState("");
+  const [dob, setDob] = useState("");
+
+
   const strengthScore = useMemo(() => {
     let score = 0;
     if (password.length >= 6) score++;
@@ -70,35 +79,72 @@ export default function SignupForm({
         or sign up with email
       </div>
 
+      <div className="w-full ">
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label
-            htmlFor="signup-name"
-            className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
-          >
-            Full name
-          </label>
-          <div className="relative flex items-center">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.8}
-              className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+        {/* First name / Last name */}
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div>
+            <label
+              htmlFor="signup-firstName"
+              className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
             >
-              <circle cx="12" cy="8" r="3.5" />
-              <path d="M4.5 20c1.4-3.6 4-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
-            </svg>
-            <input
-              id="signup-name"
-              type="text"
-              placeholder="Ada Obi"
-              required
-              className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
-            />
+              First name
+            </label>
+            <div className="relative flex items-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+              >
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M4.5 20c1.4-3.6 4-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
+              </svg>
+              <input
+                id="signup-firstName"
+                type="text"
+                placeholder="Ada"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              />
+            </div>
+          </div>
+ 
+          <div>
+            <label
+              htmlFor="signup-lastName"
+              className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
+            >
+              Last name
+            </label>
+            <div className="relative flex items-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+              >
+                <circle cx="12" cy="8" r="3.5" />
+                <path d="M4.5 20c1.4-3.6 4-5.4 7.5-5.4s6.1 1.8 7.5 5.4" />
+              </svg>
+              <input
+                id="signup-lastName"
+                type="text"
+                placeholder="Obi"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              />
+            </div>
           </div>
         </div>
-
+ 
+        {/* Email */}
         <div className="mb-4">
           <label
             htmlFor="signup-email"
@@ -122,11 +168,143 @@ export default function SignupForm({
               type="email"
               placeholder="you@example.com"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
             />
           </div>
         </div>
-
+ 
+        {/* City / Country */}
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div>
+            <label
+              htmlFor="signup-city"
+              className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
+            >
+              City
+            </label>
+            <div className="relative flex items-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+              >
+                <path d="M4 20V9l6-3.5V20" />
+                <path d="M10 20V5.5L20 9v11" />
+                <path d="M7 12h0M7 15h0M13 12h2M13 15h2" />
+              </svg>
+              <input
+                id="signup-city"
+                type="text"
+                placeholder="Ibadan"
+                required
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              />
+            </div>
+          </div>
+ 
+          <div>
+            <label
+              htmlFor="signup-country"
+              className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
+            >
+              Country
+            </label>
+            <div className="relative flex items-center">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.8}
+                className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+              >
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M3.5 12h17M12 3.5c2.4 2.3 3.7 5.2 3.7 8.5s-1.3 6.2-3.7 8.5c-2.4-2.3-3.7-5.2-3.7-8.5S9.6 5.8 12 3.5Z" />
+              </svg>
+              <input
+                id="signup-country"
+                type="text"
+                placeholder="Nigeria"
+                required
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              />
+            </div>
+          </div>
+        </div>
+ 
+        {/* Gender */}
+        <div className="mb-4">
+          <span className="mb-[7px] block text-[13px] font-semibold text-[#10192b]">
+            Gender
+          </span>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setGender("male")}
+              aria-pressed={gender === "male"}
+              className={`rounded-[14px] border-[1.5px] py-3 text-[14.5px] font-semibold transition-all ${
+                gender === "male"
+                  ? "border-[#1aa6e0] bg-white text-[#10192b] shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+                  : "border-[#e7ecf3] bg-[#f7f9fc] text-[#5b6577] hover:border-[#cfd8e6]"
+              }`}
+            >
+              Male
+            </button>
+            <button
+              type="button"
+              onClick={() => setGender("female")}
+              aria-pressed={gender === "female"}
+              className={`rounded-[14px] border-[1.5px] py-3 text-[14.5px] font-semibold transition-all ${
+                gender === "female"
+                  ? "border-[#1aa6e0] bg-white text-[#10192b] shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+                  : "border-[#e7ecf3] bg-[#f7f9fc] text-[#5b6577] hover:border-[#cfd8e6]"
+              }`}
+            >
+              Female
+            </button>
+          </div>
+          {/* Hidden input keeps gender part of native form validation/submission */}
+          <input type="hidden" name="gender" value={gender} required />
+        </div>
+ 
+        {/* Date of birth */}
+        <div className="mb-4">
+          <label
+            htmlFor="signup-dob"
+            className="mb-[7px] block text-[13px] font-semibold text-[#10192b]"
+          >
+            Date of birth
+          </label>
+          <div className="relative flex items-center">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              className="pointer-events-none absolute left-3.5 h-[17px] w-[17px] text-[#9aa7bb]"
+            >
+              <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+              <path d="M3.5 9.5h17M8 3v3.5M16 3v3.5" />
+            </svg>
+            <input
+              id="signup-dob"
+              type="date"
+              required
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+            />
+          </div>
+        </div>
+ 
+        {/* Password */}
         <div className="mb-4">
           <label
             htmlFor="signup-password"
@@ -172,23 +350,8 @@ export default function SignupForm({
               </svg>
             </button>
           </div>
-
-          <div className="mt-2 flex gap-1">
-            {[0, 1, 2, 3].map((i) => (
-              <i
-                key={i}
-                className="h-[3px] flex-1 rounded-sm"
-                style={{
-                  background:
-                    i < strengthScore
-                      ? strengthColors[Math.max(strengthScore - 1, 0)]
-                      : "#e7ecf3",
-                }}
-              />
-            ))}
-          </div>
         </div>
-
+ 
         <button
           type="submit"
           className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#1aa6e0] to-[#14b8a6] px-4 py-[13.5px] text-[15px] font-bold text-white shadow-[0_14px_24px_-12px_rgba(20,184,166,0.55)] transition-all hover:-translate-y-px hover:shadow-[0_18px_28px_-12px_rgba(20,184,166,0.65)] active:translate-y-0 [&:hover_svg]:translate-x-1"
@@ -204,7 +367,8 @@ export default function SignupForm({
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </button>
-      </form>
+        </form>
+        </div>
 
       <p className="mt-[18px] text-center text-xs leading-[1.6] text-[#a5b0c2]">
         By continuing, you agree to Travelix&apos;s{" "}
