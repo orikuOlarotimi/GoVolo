@@ -2,7 +2,7 @@ import {Plane} from "lucide-react";
 
 export default function ScenePanel() {
   return (
-    <aside className="relative hidden lg:flex flex-col justify-center overflow-hidden  text-white px-12 py-11 items-center group">
+    <aside className="relative hidden lg:flex flex-col justify-center overflow-hidden  text-white px-12 py-11 items-center group ">
       <img
         src={"/images/login.jpg"}
         alt={"hello world"}
@@ -10,6 +10,9 @@ export default function ScenePanel() {
       />
 
       <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(7,21,38,0.88)_0%,rgba(7,21,38,0.62)_35%,rgba(7,21,38,0.15)_65%,transparent_100%)]" />
+
+      {/* Grey overlay - RIGHT → LEFT */}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-l from-gray-500/70 to-transparent" />
 
       <div className=" relative z-10   min-h-[560px] flex flex-col justify-between mr-[120px]">
         {/* brand */}

@@ -25,11 +25,11 @@ export default function LoginPage() {
 
   return (
     <div
-      className={`${jakarta.variable} ${inter.variable} font-sans grid min-h-screen grid-cols-1 bg-[#f7f9fc] text-[#10192b] antialiased lg:grid-cols-[1.05fr_1fr]`}
+      className={`${jakarta.variable} ${inter.variable} font-sans grid h-screen grid-cols-1 bg-[#f7f9fc] text-[#10192b] antialiased lg:grid-cols-[1.05fr_1fr]`}
     >
       <ScenePanel />
 
-      <main className="flex items-center justify-center bg-white px-5 py-10 sm:px-8 font-[Plus_Jakarta_Sans,sans-serif]">
+      <main className="flex justify-center overflow-y-auto bg-white px-5 py-10 sm:px-8 font-[Plus_Jakarta_Sans,sans-serif]">
         <div className="w-full max-w-[500px] ">
           <div className="mb-7 flex justify-end text-[13.5px] text-[#64748b]">
             Need help?{" "}
@@ -71,7 +71,7 @@ export default function LoginPage() {
             >
               Sign up
             </button>
-          </div> 
+          </div>
 
           {mode === "login" ? (
             <LoginForm onSwitchToSignup={() => setMode("signup")} />
