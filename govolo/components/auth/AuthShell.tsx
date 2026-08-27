@@ -27,35 +27,18 @@ export default function AuthShell({
       className={`${plusJakarta.className} min-h-screen w-full bg-white flex flex-col lg:flex-row`}
     >
       {/* LEFT PANEL */}
-      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between overflow-hidden bg-[#0b1b2e] px-14 py-12 text-white">
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between overflow-hidden  px-14 py-12 text-white group">
         {/* background world-map + gradient glow */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.14]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)",
-            backgroundSize: "22px 22px",
-          }}
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(7,21,38,0.88)_0%,rgba(7,21,38,0.62)_35%,rgba(7,21,38,0.15)_65%,transparent_100%)]" />
+
+        {/* Grey overlay - RIGHT → LEFT */}
+        <div className="absolute inset-0 z-[2] bg-gradient-to-l from-gray-500/70 to-transparent" />
+
+        <img
+          src={"/images/authshell.jpg"}
+          alt={"hello world"}
+          className="object-cover inset-0 z-0 w-full h-full group-hover:scale-107 transition duration-500 absolute"
         />
-        <div className="pointer-events-none absolute -top-24 -left-24 h-[420px] w-[420px] rounded-full bg-[#1aa6e0]/20 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 right-0 h-[380px] w-[380px] rounded-full bg-[#5eead4]/10 blur-3xl" />
-
-        {/* location pins, purely decorative */}
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="pointer-events-none absolute left-[7%] top-[10%] h-5 w-5 text-[#f0b429]/80"
-        >
-          <path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
-        </svg>
-        <svg
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="pointer-events-none absolute right-[12%] top-[16%] h-6 w-6 text-[#f0b429]/70"
-        >
-          <path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4.4-3.6-8-8-8Zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
-        </svg>
-
         {/* header */}
         <div className="relative z-10 flex items-center gap-2">
           <svg
@@ -71,14 +54,14 @@ export default function AuthShell({
         </div>
 
         {/* hero copy */}
-        <div className="relative z-10 max-w-md">
-          <h1 className="text-[38px] font-extrabold leading-[1.15] tracking-tight">
+        <div className="relative z-10 max-w-[500px]">
+          <h1 className="text-[40px] font-extrabold leading-[1.15] tracking-tight">
             Your next trip is{" "}
             <span className="bg-gradient-to-r from-[#5eead4] to-[#1aa6e0] bg-clip-text text-transparent">
               one login away
             </span>
           </h1>
-          <p className="mt-5 text-[15px] leading-relaxed text-[#aab6c8]">
+          <p className="mt-5 text-[16px] leading-relaxed text-white">
             Discover new places, experience amazing adventures, create
             unforgettable memories, and let every journey take you somewhere
             new, because the best stories are the ones you live, explore, and
@@ -88,22 +71,24 @@ export default function AuthShell({
           <div className="mt-9 flex items-center gap-8">
             <div>
               <p className="text-[22px] font-extrabold">50K+</p>
-              <p className="text-[13px] text-[#8b98ac]">Happy travelers</p>
+              <p className="text-[14px] text-white font-bold">
+                Happy travelers
+              </p>
             </div>
             <div>
               <p className="text-[22px] font-extrabold">120+</p>
-              <p className="text-[13px] text-[#8b98ac]">Countries</p>
+              <p className="text-[14px] text-white font-bold">Countries</p>
             </div>
             <div>
               <p className="text-[22px] font-extrabold">4.9★</p>
-              <p className="text-[13px] text-[#8b98ac]">Avg. rating</p>
+              <p className="text-[14px] text-white font-bold">Avg. rating</p>
             </div>
           </div>
         </div>
 
         {/* testimonial + footer */}
-        <div className="relative z-10">
-          <div className="max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm">
+        <div className="relative z-10 ">
+          <div className="max-w-md  p-5">
             <p className="text-[14.5px] italic leading-relaxed text-[#d6dee8]">
               "Booked Santorini in under five minutes. Travelix remembered my
               preferences from the last trip, genuinely felt effortless."
@@ -118,7 +103,7 @@ export default function AuthShell({
               </div>
             </div>
           </div>
-          <p className="mt-6 text-[12px] text-[#6b7789]">
+          <p className="mt-6 text-[12px] text-white">
             © 2026 GoVolo. Wander further.
           </p>
         </div>
@@ -138,13 +123,11 @@ export default function AuthShell({
             >
               <path d="M3 12l18-8-6 18-3-7-7-3Z" strokeLinejoin="round" />
             </svg>
-            <span className="text-[16px] font-bold tracking-tight text-[#10192b]">
+            <span className="text-[16px] font-bold tracking-tight text-white">
               GoVolo
             </span>
           </div>
-          <div className="ml-auto text-[13.5px] text-[#5b6779]">
-            {topRight}
-          </div>
+          <div className="ml-auto text-[13.5px] text-[#5b6779]">{topRight}</div>
         </div>
 
         <div className="flex flex-1 items-center justify-center">

@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { validateEmail } from "@/utils/validation";
+import Link from "next/link";
+import { toast } from "sonner";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -16,7 +18,6 @@ export default function LoginForm({
   const [rememberMe, setRememberMe] = useState(false);
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const markTouched = (field: string) => {
@@ -46,16 +47,13 @@ export default function LoginForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitError(null);
 
     setTouched({ email: true, password: true });
 
     if (!isFormValid) return;
 
     if (!API_BASE_URL) {
-      setSubmitError(
-        "Server address is not configured. Please contact support.",
-      );
+      toast.error("Server address is not configured. Please contact support.");
       return;
     }
 
@@ -80,15 +78,16 @@ export default function LoginForm({
           Array.isArray(data.errors) && data.errors.length > 0
             ? data.errors.join(", ")
             : data.message || "Something went wrong. Please try again.";
-        setSubmitError(message);
+        toast.error(message);
         return;
       }
 
       // Success — hand off to whatever your app does next
       // (e.g. redirect to dashboard, store returned user info in context/state)
+      toast.success("Welcome back!");
       console.log("Login successful:", data);
     } catch (err) {
-      setSubmitError(
+      toast.error(
         "Could not reach the server. Please check your connection and try again.",
       );
     } finally {
@@ -243,17 +242,13 @@ export default function LoginForm({
             />
             Remember me
           </label>
-          <a href="#" className="font-semibold text-[#1aa6e0]">
+          <Link
+            href="/forgot-password"
+            className="font-semibold text-[#1aa6e0]"
+          >
             Forgot password?
-          </a>
+          </Link>
         </div>
-
-        {submitError && (
-          <p className="mb-4 rounded-[10px] bg-[#fef2f2] px-3.5 py-2.5 text-[13px] text-[#dc2626]">
-            {submitError}
-          </p>
-        )}
-
         <button
           type="submit"
           disabled={!isFormValid || isSubmitting}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthShell from "../../../components/auth/AuthShell";
+import { toast } from "sonner";
 
 const RESEND_SECONDS = 60;
 
@@ -13,11 +14,9 @@ export default function VerifyOtpPage() {
   const email = searchParams.get("email") || "";
 
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
-  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(RESEND_SECONDS);
   const [resending, setResending] = useState(false);
-  const [resendMessage, setResendMessage] = useState("");
 
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
@@ -35,7 +34,7 @@ export default function VerifyOtpPage() {
     const next = [...digits];
     next[index] = value;
     setDigits(next);
-    setError("");
+   
 
     if (value && index < 5) {
       inputsRef.current[index + 1]?.focus();
@@ -64,16 +63,15 @@ export default function VerifyOtpPage() {
     const otp = digits.join("");
 
     if (otp.length !== 6) {
-      setError("Enter the full 6-digit code");
+      toast.error("Enter the full 6-digit code");
       return;
     }
     if (!email) {
-      setError("Missing email address, please sign up again");
+      toast.error("Missing email address, please sign up again");
       return;
     }
 
     setSubmitting(true);
-    setError("");
 
     try {
       const res = await fetch(
@@ -88,14 +86,14 @@ export default function VerifyOtpPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError(data.message || "Invalid or expired code");
+        toast.error(data.message || "Invalid or expired code");
         setSubmitting(false);
         return;
       }
 
-      router.push("/login");
+      router.push("/");
     } catch {
-      setError("Something went wrong, please try again");
+      toast.error("Something went wrong, please try again");
       setSubmitting(false);
     }
   };
@@ -103,13 +101,11 @@ export default function VerifyOtpPage() {
   const handleResend = async () => {
     if (resendCooldown > 0 || resending) return;
     if (!email) {
-      setError("Missing email address, please sign up again");
+      toast.error("Missing email address, please sign up again");
       return;
     }
 
     setResending(true);
-    setResendMessage("");
-    setError("");
 
     try {
       const res = await fetch(
@@ -124,17 +120,16 @@ export default function VerifyOtpPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setError(data.message || "Could not resend code");
+        toast.error(data.message || "Could not resend code");
         setResending(false);
         return;
       }
-
-      setResendMessage("A new code has been sent to your email");
+      toast.message("A new code has been sent to your email");
       setResendCooldown(RESEND_SECONDS);
       setDigits(Array(6).fill(""));
       inputsRef.current[0]?.focus();
     } catch {
-      setError("Something went wrong, please try again");
+      toast.error("Something went wrong, please try again");
     } finally {
       setResending(false);
     }
@@ -178,22 +173,12 @@ export default function VerifyOtpPage() {
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               aria-label={`Digit ${index + 1}`}
-              aria-invalid={!!error}
-              className={`h-14 w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] text-center text-[20px] font-bold text-[#10192b] outline-none transition-all focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)] ${
-                error
-                  ? "border-[#ef4444]"
-                  : "border-[#e7ecf3] focus:border-[#1aa6e0]"
-              }`}
+            
+              className="h-14 w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] text-center text-[20px] font-bold text-[#10192b] outline-none transition-all focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]
+                  border-[#e7ecf3] focus:border-[#1aa6e0]"
             />
           ))}
         </div>
-
-        {error && (
-          <p className="mt-3 text-[13px] text-[#ef4444]">{error}</p>
-        )}
-        {resendMessage && !error && (
-          <p className="mt-3 text-[13px] text-[#12b76a]">{resendMessage}</p>
-        )}
 
         <button
           type="submit"
