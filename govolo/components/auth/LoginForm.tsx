@@ -1,6 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { validateEmail } from "@/utils/validation";
+import Link from "next/link";
+import { toast } from "sonner";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function LoginForm({
   onSwitchToSignup,
@@ -8,11 +13,86 @@ export default function LoginForm({
   onSwitchToSignup: () => void;
 }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const markTouched = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const validatePasswordRequired = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (trimmed.length === 0) {
+      return "Password is required";
+    }
+    return null;
+  };
+
+  const errors = useMemo(
+    () => ({
+      email: validateEmail(email),
+      password: validatePasswordRequired(password),
+    }),
+    [email, password],
+  );
+
+  const isFormValid = useMemo(
+    () => Object.values(errors).every((err) => err === null),
+    [errors],
+  );
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Wire this up to your actual auth endpoint (e.g. POST /api/auth/login)
-    console.log("login form submitted");
+
+    setTouched({ email: true, password: true });
+
+    if (!isFormValid) return;
+
+    if (!API_BASE_URL) {
+      toast.error("Server address is not configured. Please contact support.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password: password.trim(),
+          rememberMe,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const message =
+          Array.isArray(data.errors) && data.errors.length > 0
+            ? data.errors.join(", ")
+            : data.message || "Something went wrong. Please try again.";
+        toast.error(message);
+        return;
+      }
+
+      // Success — hand off to whatever your app does next
+      // (e.g. redirect to dashboard, store returned user info in context/state)
+      toast.success("Welcome back!");
+      console.log("Login successful:", data);
+    } catch (err) {
+      toast.error(
+        "Could not reach the server. Please check your connection and try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -58,7 +138,7 @@ export default function LoginForm({
         or continue with email
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="mb-4">
           <label
             htmlFor="login-email"
@@ -81,10 +161,20 @@ export default function LoginForm({
               id="login-email"
               type="email"
               placeholder="you@example.com"
-              required
-              className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => markTouched("email")}
+              aria-invalid={touched.email && !!errors.email}
+              className={`w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] py-3 pl-10 pr-3.5 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)] ${
+                touched.email && errors.email
+                  ? "border-[#ef4444]"
+                  : "border-[#e7ecf3] focus:border-[#1aa6e0]"
+              }`}
             />
           </div>
+          {touched.email && errors.email && (
+            <p className="mt-1.5 text-xs text-[#ef4444]">{errors.email}</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -109,8 +199,15 @@ export default function LoginForm({
               id="login-password"
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              required
-              className="w-full rounded-[14px] border-[1.5px] border-[#e7ecf3] bg-[#f7f9fc] py-3 pl-10 pr-10 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:border-[#1aa6e0] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => markTouched("password")}
+              aria-invalid={touched.password && !!errors.password}
+              className={`w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] py-3 pl-10 pr-10 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)] ${
+                touched.password && errors.password
+                  ? "border-[#ef4444]"
+                  : "border-[#e7ecf3] focus:border-[#1aa6e0]"
+              }`}
             />
             <button
               type="button"
@@ -130,32 +227,45 @@ export default function LoginForm({
               </svg>
             </button>
           </div>
+          {touched.password && errors.password && (
+            <p className="mt-1.5 text-xs text-[#ef4444]">{errors.password}</p>
+          )}
         </div>
 
         <div className="my-1 mb-[22px] flex items-center justify-between text-[13.5px]">
           <label className="flex cursor-pointer select-none items-center gap-2 text-[#64748b]">
-            <input type="checkbox" className="h-4 w-4 accent-[#1aa6e0]" />
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 accent-[#1aa6e0]"
+            />
             Remember me
           </label>
-          <a href="#" className="font-semibold text-[#1aa6e0]">
+          <Link
+            href="/forgot-password"
+            className="font-semibold text-[#1aa6e0]"
+          >
             Forgot password?
-          </a>
+          </Link>
         </div>
-
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#1aa6e0] to-[#14b8a6] px-4 py-[13.5px] text-[15px] font-bold text-white shadow-[0_14px_24px_-12px_rgba(20,184,166,0.55)] transition-all hover:-translate-y-px hover:shadow-[0_18px_28px_-12px_rgba(20,184,166,0.65)] active:translate-y-0 [&:hover_svg]:translate-x-1"
+          disabled={!isFormValid || isSubmitting}
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#1aa6e0] to-[#14b8a6] px-4 py-[13.5px] text-[15px] font-bold text-white shadow-[0_14px_24px_-12px_rgba(20,184,166,0.55)] transition-all hover:-translate-y-px hover:shadow-[0_18px_28px_-12px_rgba(20,184,166,0.65)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_14px_24px_-12px_rgba(20,184,166,0.55)] [&:hover_svg]:translate-x-1"
         >
-          Log in
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth={2}
-            className="h-4 w-4 transition-transform"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
+          {isSubmitting ? "Logging in..." : "Log in"}
+          {!isSubmitting && (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth={2}
+              className="h-4 w-4 transition-transform"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          )}
         </button>
       </form>
 
