@@ -9,6 +9,8 @@ import {
   validatePassword,
   validateConfirmPassword,
 } from "@/utils/validation";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -29,7 +31,8 @@ export default function SignupForm({
   onSwitchToLogin,
 }: {
   onSwitchToLogin: () => void;
-}) {
+  }) {
+   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -46,7 +49,6 @@ export default function SignupForm({
   // Tracks which fields the user has already left (blurred), so we don't
   // show "First name is required" the instant the page loads.
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const markTouched = (field: string) => {
@@ -98,7 +100,6 @@ export default function SignupForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitError(null);
 
     // Mark everything touched so any remaining errors surface on submit attempt,
     // even for fields the user never blurred (e.g. tabbed past quickly).
@@ -117,12 +118,9 @@ export default function SignupForm({
     if (!isFormValid) return;
 
     if (!API_BASE_URL) {
-      setSubmitError(
-        "Server address is not configured. Please contact support.",
-      );
+       toast.error("Server address is not configured. Please contact support.");
       return;
     }
-
     setIsSubmitting(true);
 
     try {
@@ -150,17 +148,37 @@ export default function SignupForm({
           Array.isArray(data.errors) && data.errors.length > 0
             ? data.errors.join(", ")
             : data.message || "Something went wrong. Please try again.";
-        setSubmitError(message);
+         toast.error(message);
         return;
       }
 
       // Success — hand off to whatever your app does next
       // (e.g. redirect to dashboard, or switch to login with a success toast)
+      toast.success(data.message || "Account created successfully");
       console.log("Signup successful:", data);
+
+      toast.success(data.message || "Account created successfully");
+
+      const verifiedEmail = email.trim().toLowerCase();
+
+      // Clear all inputs
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setCity("");
+      setCountry("");
+      setGender("");
+      setDob("");
+      setPassword("");
+      setConfirmPassword("");
+      setTouched({});
+
+      // Navigate to OTP page with the email in the query string
+      router.push(`/otp?email=${encodeURIComponent(verifiedEmail)}`);
     } catch (err) {
-      setSubmitError(
-        "Could not reach the server. Please check your connection and try again.",
-      );
+       toast.error(
+         "Could not reach the server. Please check your connection and try again.",
+       );
     } finally {
       setIsSubmitting(false);
     }
@@ -621,11 +639,7 @@ export default function SignupForm({
           )}
         </div>
 
-        {submitError && (
-          <p className="mb-4 rounded-[10px] bg-[#fef2f2] px-3.5 py-2.5 text-[13px] text-[#dc2626]">
-            {submitError}
-          </p>
-        )}
+   
 
         <button
           type="submit"

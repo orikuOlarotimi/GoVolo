@@ -3,10 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import AuthShell from "../../../components/auth/AuthShell";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -22,9 +25,11 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationError = validate(email);
-    setError(validationError);
-    if (validationError) return;
-
+    if (validationError) {
+      toast.error(validationError);
+      setError(validationError);
+      return;
+    }
     setSubmitting(true);
 
     try {
@@ -40,13 +45,21 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
+        toast.error(data.message || "Could not send reset link");
+
         setError(data.message || "Could not send reset link");
         setSubmitting(false);
         return;
       }
 
+      toast.success(data.message || "A reset code has been sent to your email");
+      router.push(
+        `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+      );
+
       setSent(true);
     } catch {
+      toast.error("Something went wrong, please try again");
       setError("Something went wrong, please try again");
     } finally {
       setSubmitting(false);
@@ -66,7 +79,7 @@ export default function ForgotPasswordPage() {
     >
       {sent ? (
         <>
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e6f9f2]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#e6f9f2] font-[Plus_Jakarta_Sans,sans-serif]">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -74,7 +87,11 @@ export default function ForgotPasswordPage() {
               strokeWidth={2}
               className="h-6 w-6"
             >
-              <path d="M4 12l5 5L20 6" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M4 12l5 5L20 6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
           <h2 className="mt-5 text-[26px] font-extrabold tracking-tight text-[#10192b]">
@@ -82,8 +99,8 @@ export default function ForgotPasswordPage() {
           </h2>
           <p className="mt-2 text-[14.5px] leading-relaxed text-[#5b6779]">
             If an account exists for{" "}
-            <span className="font-semibold text-[#10192b]">{email}</span>,
-            we've sent a link to reset your password.
+            <span className="font-semibold text-[#10192b]">{email}</span>, we've
+            sent a link to reset your password.
           </p>
 
           <Link
@@ -110,8 +127,8 @@ export default function ForgotPasswordPage() {
             Forgot your password?
           </h2>
           <p className="mt-2 text-[14.5px] leading-relaxed text-[#5b6779]">
-            Enter the email address linked to your account and we'll send you
-            a link to reset it.
+            Enter the email address linked to your account and we'll send you an
+             otp to reset it.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8">
@@ -150,7 +167,9 @@ export default function ForgotPasswordPage() {
                 }`}
               />
             </div>
-            {error && <p className="mt-1.5 text-[13px] text-[#ef4444]">{error}</p>}
+            {/* {error && (
+              <p className="mt-1.5 text-[13px] text-[#ef4444]">{error}</p>
+            )} */}
 
             <button
               type="submit"
