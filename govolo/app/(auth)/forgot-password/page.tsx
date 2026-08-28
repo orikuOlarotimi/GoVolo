@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
 
       toast.success(data.message || "A reset code has been sent to your email");
       router.push(
-        `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+        `/reset-otp?email=${encodeURIComponent(email.trim().toLowerCase())}`,
       );
 
       setSent(true);

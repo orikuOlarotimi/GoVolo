@@ -75,7 +75,7 @@ export default function VerifyOtpPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/verify-otp`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/verify-reset-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -90,8 +90,8 @@ export default function VerifyOtpPage() {
         setSubmitting(false);
         return;
       }
-      toast.success(data.message || "Account verified successfully");
-      router.push("/");
+      toast.success(data.message || "Account verified successfully\n Please change your password");
+      router.push("/reset-password");
     } catch {
       toast.error("Something went wrong, please try again");
       setSubmitting(false);
@@ -109,7 +109,7 @@ export default function VerifyOtpPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/resend-otp`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/resend-reset-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,7 +124,7 @@ export default function VerifyOtpPage() {
         setResending(false);
         return;
       }
-      toast.message("A new code has been sent to your email");
+      toast.success("A new code has been sent to your email");
       setResendCooldown(RESEND_SECONDS);
       setDigits(Array(6).fill(""));
       inputsRef.current[0]?.focus();
@@ -194,7 +194,7 @@ export default function VerifyOtpPage() {
             type="button"
             onClick={handleResend}
             disabled={resendCooldown > 0 || resending}
-            className="font-semibold text-[#1aa6e0] disabled:cursor-not-allowed disabled:text-[#a5b0c2]"
+            className="font-semibold text-[#1aa6e0] disabled:cursor-not-allowed disabled:text-[#a5b0c2] cursor-pointer"
           >
             {resending
               ? "Sending..."
