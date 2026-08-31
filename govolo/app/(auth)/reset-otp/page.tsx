@@ -90,8 +90,10 @@ export default function VerifyOtpPage() {
         setSubmitting(false);
         return;
       }
-      toast.success(data.message || "Account verified successfully\n Please change your password");
-      router.push("/reset-password");
+      toast.success(data.message || "Account verified successfully, Please change your password");
+      router.push(
+        `/reset-password?email=${encodeURIComponent(email)}&resetToken=${encodeURIComponent(data.resetToken)}`,
+      );
     } catch {
       toast.error("Something went wrong, please try again");
       setSubmitting(false);
