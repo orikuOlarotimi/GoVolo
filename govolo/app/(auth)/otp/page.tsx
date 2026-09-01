@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthShell from "../../../components/auth/AuthShell";
 import { toast } from "sonner";
+import { useAuth } from "../../../context/authContext";
 
 const RESEND_SECONDS = 60;
 
@@ -12,6 +13,7 @@ export default function VerifyOtpPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
+   const { login } = useAuth();
 
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const [submitting, setSubmitting] = useState(false);
@@ -34,7 +36,6 @@ export default function VerifyOtpPage() {
     const next = [...digits];
     next[index] = value;
     setDigits(next);
-   
 
     if (value && index < 5) {
       inputsRef.current[index + 1]?.focus();
@@ -90,6 +91,12 @@ export default function VerifyOtpPage() {
         setSubmitting(false);
         return;
       }
+      if (!data.user || !data.accessToken) {
+        toast.error("Something went wrong, please try again");
+        setSubmitting(false);
+        return;
+      }
+      login(data.user, data.accessToken);
       toast.success(data.message || "Account verified successfully");
       router.push("/");
     } catch {
@@ -173,7 +180,6 @@ export default function VerifyOtpPage() {
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               aria-label={`Digit ${index + 1}`}
-            
               className="h-14 w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] text-center text-[20px] font-bold text-[#10192b] outline-none transition-all focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)]
                   border-[#e7ecf3] focus:border-[#1aa6e0]"
             />

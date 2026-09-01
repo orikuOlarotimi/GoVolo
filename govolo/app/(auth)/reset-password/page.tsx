@@ -4,19 +4,22 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import AuthShell from "../../../components/auth/AuthShell";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
+  const token = searchParams.get("resetToken") || "";
   const email = searchParams.get("email") || "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
-  const [formError, setFormError] = useState("");
+  const [errors, setErrors] = useState<{
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -41,13 +44,12 @@ export default function ResetPasswordPage() {
 
     if (passwordError || confirmError) return;
 
-    if (!token) {
-      setFormError("This reset link is invalid or has expired");
+    if (!token || !email) {
+      toast.error("This reset link is invalid or has expired");
       return;
     }
 
     setSubmitting(true);
-    setFormError("");
 
     try {
       const res = await fetch(
@@ -56,9 +58,9 @@ export default function ResetPasswordPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            token,
             email,
-            password: password.trim(),
+            resetToken: token,
+            newPassword: password.trim(),
           }),
         },
       );
@@ -66,15 +68,16 @@ export default function ResetPasswordPage() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        setFormError(data.message || "Could not reset your password");
+        toast.error(data.message || "Could not reset your password");
         setSubmitting(false);
         return;
       }
 
       setDone(true);
+      toast.success(data.message || "Password reset successful, please log in");
       setTimeout(() => router.push("/login"), 2000);
     } catch {
-      setFormError("Something went wrong, please try again");
+      toast.error("Something went wrong, please try again");
       setSubmitting(false);
     }
   };
@@ -100,7 +103,11 @@ export default function ResetPasswordPage() {
               strokeWidth={2}
               className="h-6 w-6"
             >
-              <path d="M4 12l5 5L20 6" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M4 12l5 5L20 6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
           <h2 className="mt-5 text-[26px] font-extrabold tracking-tight text-[#10192b]">
@@ -149,10 +156,14 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value);
-                    if (errors.password) setErrors((p) => ({ ...p, password: "" }));
+                    if (errors.password)
+                      setErrors((p) => ({ ...p, password: "" }));
                   }}
                   onBlur={() =>
-                    setErrors((p) => ({ ...p, password: validatePassword(password) }))
+                    setErrors((p) => ({
+                      ...p,
+                      password: validatePassword(password),
+                    }))
                   }
                   aria-invalid={!!errors.password}
                   className={`w-full rounded-[14px] border-[1.5px] bg-[#f7f9fc] py-3 pl-10 pr-11 text-[14.5px] text-[#10192b] outline-none transition-all placeholder:text-[#a5b0c2] focus:bg-white focus:shadow-[0_0_0_4px_rgba(26,166,224,0.12)] ${
@@ -190,7 +201,9 @@ export default function ResetPasswordPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1.5 text-[13px] text-[#ef4444]">{errors.password}</p>
+                <p className="mt-1.5 text-[13px] text-[#ef4444]">
+                  {errors.password}
+                </p>
               )}
             </div>
 
@@ -225,7 +238,10 @@ export default function ResetPasswordPage() {
                   onBlur={() =>
                     setErrors((p) => ({
                       ...p,
-                      confirmPassword: validateConfirm(confirmPassword, password),
+                      confirmPassword: validateConfirm(
+                        confirmPassword,
+                        password,
+                      ),
                     }))
                   }
                   aria-invalid={!!errors.confirmPassword}
@@ -269,10 +285,6 @@ export default function ResetPasswordPage() {
                 </p>
               )}
             </div>
-
-            {formError && (
-              <p className="text-[13px] text-[#ef4444]">{formError}</p>
-            )}
 
             <button
               type="submit"

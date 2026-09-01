@@ -4,6 +4,11 @@ import { useMemo, useState } from "react";
 import { validateEmail } from "@/utils/validation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+import { useAuth } from "../../context/authContext";
+// ...
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -11,7 +16,9 @@ export default function LoginForm({
   onSwitchToSignup,
 }: {
   onSwitchToSignup: () => void;
-}) {
+  }) {
+  const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,7 +92,8 @@ export default function LoginForm({
       // Success — hand off to whatever your app does next
       // (e.g. redirect to dashboard, store returned user info in context/state)
       toast.success("Welcome back!");
-      console.log("Login successful:", data);
+      login(data.user, data.accessToken);
+      router.push("/")
     } catch (err) {
       toast.error(
         "Could not reach the server. Please check your connection and try again.",
