@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 import { useAuth } from "../../context/authContext";
 // ...
-const { login } = useAuth();
+
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -18,6 +18,7 @@ export default function LoginForm({
   onSwitchToSignup: () => void;
   }) {
   const router = useRouter();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
