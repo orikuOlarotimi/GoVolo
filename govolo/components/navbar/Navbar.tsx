@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plane, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
 
-// Centralized navigation links for easy maintenance
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Destinations", path: "/destinations" },
@@ -16,6 +18,9 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -24,17 +29,14 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // Handle background transparency
       if (currentScrollY < 50) {
         setIsScrolled(false);
         setIsVisible(true);
       } else {
         setIsScrolled(true);
-        // Handle hide/show on scroll direction
         if (currentScrollY > lastScrollY && currentScrollY > 100) {
           setIsVisible(false);
-          setIsMobileMenuOpen(false); // Close mobile menu if scrolling down
+          setIsMobileMenuOpen(false);
         } else {
           setIsVisible(true);
         }
@@ -46,7 +48,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Lock background scrolling when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -57,6 +58,25 @@ export default function Navbar() {
       document.body.style.overflow = "unset";
     };
   }, [isMobileMenuOpen]);
+
+  const handleBookNow = () => {
+    setIsMobileMenuOpen(false);
+
+    if (!user) {
+      router.push("/login?redirect=/destinations");
+      return;
+    }
+
+     if (user.status !== "verified") {
+       toast.error(
+         "Please verify your account to continue. Log in again to receive a new code.",
+       );
+       router.push("/login?redirect=/destinations");
+       return;
+     }
+
+     router.push("/destinations");
+  };
 
   return (
     <nav
@@ -90,9 +110,42 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA Button (Desktop) */}
-        <div className="hidden md:block">
-          <Button className="bg-[#20c997] hover:bg-[#1ba87e] text-white border-none px-6 py-5 rounded-md font-semibold transition-colors">
+        {/* Right side: Login/Account + Book Now grouped together */}
+        <div className="hidden md:flex items-center gap-4">
+          {loading ? (
+            <div
+              className={`h-9 w-20 animate-pulse rounded-md ${
+                isScrolled ? "bg-slate-200" : "bg-white/20"
+              }`}
+            />
+          ) : user ? (
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 text-sm font-semibold hover:text-[#20c997] transition-colors"
+            >
+              <img
+                src={
+                  user.avatar ||
+                  "https://icon-icons.com/icon/profile-user-avatar-people/219228"
+                }
+                alt={user.firstName}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+              {user.firstName}
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-semibold hover:text-[#20c997] transition-colors"
+            >
+              Log in
+            </Link>
+          )}
+
+          <Button
+            onClick={handleBookNow}
+            className="bg-[#20c997] hover:bg-[#1ba87e] text-white border-none px-6 py-5 rounded-md font-semibold transition-colors"
+          >
             Book Now
           </Button>
         </div>
@@ -128,9 +181,34 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+
+              {!loading &&
+                (user ? (
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 hover:text-[#20c997] transition-colors pb-3 border-b border-slate-100"
+                  >
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#20c997] text-white text-xs font-bold">
+                      {user.firstName[0]}
+                    </span>
+                    {user.firstName}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="hover:text-[#20c997] transition-colors pb-3 border-b border-slate-100"
+                  >
+                    Log in
+                  </Link>
+                ))}
             </div>
 
-            <Button className="w-full h-12 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl font-semibold shadow-md transition-colors text-base">
+            <Button
+              onClick={handleBookNow}
+              className="w-full h-12 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl font-semibold shadow-md transition-colors text-base"
+            >
               Book Now
             </Button>
           </div>
