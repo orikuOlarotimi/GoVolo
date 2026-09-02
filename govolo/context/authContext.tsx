@@ -7,9 +7,11 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   ReactNode,
 } from "react";
 import type { User, AuthContextType } from "../types/auth";
+import { apiFetch } from "../utils/apiClient";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,8 +23,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessTokenState] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Keep localStorage in sync whenever accessToken changes
+  // Ref mirrors accessToken so getAccessToken() always reads the latest
+  // value even when called asynchronously (e.g. mid-retry inside apiFetch).
+  const accessTokenRef = useRef<string | null>(null);
+
   const setAccessToken = useCallback((token: string | null) => {
+    accessTokenRef.current = token;
     setAccessTokenState(token);
     if (token) {
       localStorage.setItem(ACCESS_TOKEN_KEY, token);
@@ -31,22 +37,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Fetches the full user object using whatever access token is currently valid
-  const fetchUser = useCallback(async (token: string) => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/users/me`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  // Single call site for /refresh-token, deduped so concurrent 401s
+  // (bootstrap, or any other request via useApiFetch) share one in-flight
+  // request instead of each hitting the endpoint separately.
+  const refreshPromiseRef = useRef<Promise<string | null> | null>(null);
 
-      if (!res.ok) return null;
+  const refreshAccessToken = useCallback(async (): Promise<string | null> => {
+    if (refreshPromiseRef.current) return refreshPromiseRef.current;
 
-      const data = await res.json();
-      return data.success ? (data.user as User) : null;
-    } catch {
-      return null;
-    }
-  }, []);
+    refreshPromiseRef.current = (async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/users/refresh-token`, {
+          method: "POST",
+          credentials: "include",
+        });
+        if (!res.ok) return null;
+
+        const data = await res.json();
+        if (!data.success || !data.accessToken) return null;
+
+        setAccessToken(data.accessToken);
+        return data.accessToken as string;
+      } catch {
+        return null;
+      } finally {
+        refreshPromiseRef.current = null;
+      }
+    })();
+
+    return refreshPromiseRef.current;
+  }, [setAccessToken]);
 
   const login = useCallback(
     (userData: User, token: string) => {
@@ -69,51 +89,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
   }, [setAccessToken]);
 
-  // On first mount: attempt a silent refresh using the httpOnly cookie,
-  // then hydrate the full user object using the freshly issued access token.
+  // On mount: just call /me. No separate refresh call up front.
+  // apiFetch handles the rest:
+  //  - sends /me with whatever token is in localStorage (possibly none)
+  //  - on 401, calls refreshAccessToken() once, which stores the new
+  //    token via setAccessToken if it succeeds
+  //  - retries /me with the new token
+  //  - on repeat 401 (or no valid refresh cookie), treat as logged out
   useEffect(() => {
     async function bootstrap() {
+      const stored = localStorage.getItem(ACCESS_TOKEN_KEY);
+      if (stored) {
+        accessTokenRef.current = stored;
+        setAccessTokenState(stored); // optimistic; /me will validate it
+      }
+
       try {
-        const res = await fetch(`${API_BASE_URL}/api/users/refresh-token`, {
-          method: "POST",
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          setLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-
-        if (!data.success || !data.accessToken) {
-          setLoading(false);
-          return;
-        }
-
-        setAccessToken(data.accessToken);
-
-        const userData = await fetchUser(data.accessToken);
-        if (userData) {
-          setUser(userData);
-        } else {
-          // token refresh worked but user fetch failed — treat as logged out
-          // rather than leaving a dangling accessToken with no user attached
-          setAccessToken(null);
-        }
+        const data = await apiFetch<{ success: boolean; user: User }>(
+          "/api/users/me",
+          { method: "GET", requiresAuth: true },
+          {
+            getAccessToken: () => accessTokenRef.current,
+            refreshAccessToken,
+            onSessionExpired: () => setAccessToken(null),
+          },
+        );
+        setUser(data.success ? data.user : null);
       } catch {
-        // silent fail — user is simply treated as logged out
+        // ApiError / SessionExpiredError / NetworkError all land here —
+        // silently treat as logged out
+        setUser(null);
       } finally {
         setLoading(false);
       }
     }
 
     bootstrap();
-  }, [setAccessToken, fetchUser]);
+  }, [refreshAccessToken, setAccessToken]);
 
   return (
     <AuthContext.Provider
-      value={{ user, accessToken, loading, login, logout, setAccessToken }}
+      value={{
+        user,
+        accessToken,
+        loading,
+        login,
+        logout,
+        setAccessToken,
+        refreshAccessToken,
+      }}
     >
       {children}
     </AuthContext.Provider>
