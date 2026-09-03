@@ -9,14 +9,13 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 // ...
 
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function LoginForm({
   onSwitchToSignup,
 }: {
   onSwitchToSignup: () => void;
-  }) {
+}) {
   const router = useRouter();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -79,7 +78,31 @@ export default function LoginForm({
       });
 
       const data = await response.json();
-
+      if (data.action === "VERIFY_OTP") {
+        try {
+          toast.message(data.message);
+          const res = await fetch(`${API_BASE_URL}/api/users/resend-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              email: email.trim().toLowerCase(),
+            }),
+          });
+          const resendData = await res.json();
+          if (!res.ok) {
+            toast.error(resendData.error || "Could not resend OTP");
+            return;
+          }
+          router.push(
+            `/otp?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+          );
+          return;
+        } catch (error) {
+          toast.error("something went wrong please try again");
+          return;
+        }
+      }
       if (!response.ok) {
         const message =
           Array.isArray(data.errors) && data.errors.length > 0
@@ -93,7 +116,7 @@ export default function LoginForm({
       // (e.g. redirect to dashboard, store returned user info in context/state)
       toast.success("Welcome back!");
       login(data.user, data.accessToken);
-      router.push("/")
+      router.push("/");
     } catch (err) {
       toast.error(
         "Could not reach the server. Please check your connection and try again.",
