@@ -155,7 +155,6 @@ export default function SignupForm({
       // Success — hand off to whatever your app does next
       // (e.g. redirect to dashboard, or switch to login with a success toast)
       toast.success(data.message || "Account created successfully");
-      console.log("Signup successful:", data);
 
       toast.success(data.message || "Account created successfully");
 
