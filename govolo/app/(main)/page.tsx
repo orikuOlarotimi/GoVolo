@@ -23,7 +23,7 @@ export default async function Home() {
   
   const [destinationsRes, bookingsRes, testimonialsRes, blogsRes] =
     await Promise.allSettled([
-      fetch(`${API_URL}/api/destinations/top-destinations?limit=3`, {
+      fetch(`${API_URL}/api/destinations/top-destinations`, {
         next: { revalidate: 60 },
       }),
       fetch(`${API_URL}/api/booking?limit=3`, {

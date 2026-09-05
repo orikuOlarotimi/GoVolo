@@ -33,7 +33,7 @@ const cards = [
     time: "5 min read",
   },
 ];
-const Blog = () => {
+const Blog = (data: any) => {
   return (
     <Section>
       <div className="px-6 py-[96px] flex items-center justify-center">

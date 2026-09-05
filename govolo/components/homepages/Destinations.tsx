@@ -30,8 +30,40 @@ function truncateDesc(description: string) {
 }
 
 
-const Destinations = (data: any) => {
-  console.log(data);
+
+function toCardProps(dest: Destination, isTop: boolean) {
+  return {
+    image: dest.mainImage,
+    location: dest.title,
+    tours: dest.visits ?? 0,
+    rating: dest.rating,
+    label: isTop ? "Trending" : undefined,
+    desc: truncateDesc(dest.description),
+  };
+}
+
+
+const Destinations = ({ data: initialData }: DestinationsProps) => {
+  const [items, setItems] = useState<Destination[]>(initialData || []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const retry = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(`${API_URL}/api/destinations/top-destinations`);
+      if (!res.ok) throw new Error("Request failed");
+      const json = await res.json();
+      setItems(json);
+    } catch {
+      
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Section>
       <div className="w-full flex items-center justify-between flex-col py-[96px] px-6 ">

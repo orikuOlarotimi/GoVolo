@@ -1,7 +1,7 @@
 import React from "react";
 import TravelCard from "../card/TravelCard";
 import Section from "../animationComponents/Section";
-const AdventureCard = () => {
+const AdventureCard = (data: any) => {
   return (
     <Section>
       <div className="w-full flex items-center justify-between flex-col py-[96px] bg-muted/50 px-6">

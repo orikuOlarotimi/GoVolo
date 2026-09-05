@@ -52,7 +52,7 @@ const testimonials = [
   },
 ];
 
-export default function Testimonials() {
+export default function Testimonials(data: any) {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeTestimonial = testimonials[activeIndex];
 
