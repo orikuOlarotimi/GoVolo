@@ -1,9 +1,37 @@
+"use client";
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { Star, MapPin } from "lucide-react";
 import DestinationCard from "../card/DestinationCard";
 import Section from "../animationComponents/Section";
-const Destinations = () => {
+import { useState } from "react";
+
+type Destination = {
+  _id?: string;
+  title: string;
+  description: string;
+  rating: number;
+  mainImage: string;
+  visits?: number;
+};
+
+type DestinationsProps = {
+  data: Destination[];
+};
+
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+function truncateDesc(description: string) {
+  if (!description) return "";
+  const words = description.trim().split(/\s+/);
+  if (words.length <= 5) return description;
+  return words.slice(0, 5).join(" ") + " .....";
+}
+
+
+const Destinations = (data: any) => {
+  console.log(data);
   return (
     <Section>
       <div className="w-full flex items-center justify-between flex-col py-[96px] px-6 ">
