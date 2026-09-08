@@ -1,19 +1,16 @@
+import { useState } from "react";
 import { Star, MapPin } from "lucide-react";
 
 type DestinationCardProps = {
   image: string;
   location: string;
-  tours: string;
+  tours: string | number;
   rating: number;
-  label?: string;
+  label?: string; // no default now — only the top-rated card gets one
   desc: string;
-
-  // optional sizing
   width?: string;
   height?: string;
-
   className?: string;
-
 };
 
 export default function DestinationCard({
@@ -21,28 +18,34 @@ export default function DestinationCard({
   location,
   tours,
   rating,
-  label = "Trending",
+  label,
   width = "w-full",
   height = "h-[420px]",
   className = "",
   desc,
 }: DestinationCardProps) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <div
       className={`relative ${width} ${height} rounded-2xl overflow-hidden shadow-lg group ${className}`}
     >
-      {/* Background Image */}
+      {/* Image skeleton — shown until the real image finishes loading */}
+      {!imgLoaded && (
+        <div className="absolute inset-0 bg-gray-300 animate-pulse" />
+      )}
+
       <img
         src={image}
         alt={location}
-        className="w-full h-full object-cover group-hover:scale-107 transition duration-500"
+        onLoad={() => setImgLoaded(true)}
+        className={`w-full h-full object-cover group-hover:scale-107 transition-opacity duration-500 ${
+          imgLoaded ? "opacity-100" : "opacity-0"
+        }`}
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t"></div>
 
-      {/* Label */}
       {label && (
         <div className="absolute top-4 left-4 bg-orange-500 text-white text-sm px-3 py-1 rounded-full font-medium inline-flex items-center gap-1">
           <svg
@@ -64,21 +67,21 @@ export default function DestinationCard({
         </div>
       )}
 
-      {/* Rating */}
       <div className="absolute top-4 right-4 flex items-center gap-1 bg-black/30 text-white text-sm px-2.5 py-1 backdrop-blur-sm rounded-full font-bold">
         <Star size={14} className="fill-yellow-400 text-yellow-400" />
         {rating}
-      </div>    
+      </div>
 
-      {/* Bottom Content */}
       <div className="absolute bottom-6 left-0 text-white flex items-center gap-3 justify-between w-full px-5 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-        <div className="">
-          <p className="mb-2 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 text-[12px]">{desc}</p>
+        <div>
+          <p className="mb-2 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75 text-[12px]">
+            {desc}
+          </p>
           <div className="flex items-center gap-1 text-sm opacity-90">
             <MapPin size={16} className="text-[rgb(13,162,231)]" />
-            <span className="font-[700] text-[20px] ">{location}</span>
+            <span className="font-[700] text-[20px]">{location}</span>
           </div>
-          <p className="text-[12px] text-white-60  mt-0.5" >{tours} Tours</p>
+          <p className="text-[12px] text-white-60 mt-0.5">{tours} Tours</p>
         </div>
 
         <button className="cursor-pointer shrink-0 w-9 h-9 rounded-xl bg-white/10 backdrop-blur-sm border border-white/25 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 hover:bg-primary hover:border-primary">

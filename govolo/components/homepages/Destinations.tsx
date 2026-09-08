@@ -1,10 +1,8 @@
 "use client";
-import React from "react";
-import { Card } from "@/components/ui/card";
-import { Star, MapPin } from "lucide-react";
+
+import { useState } from "react";
 import DestinationCard from "../card/DestinationCard";
 import Section from "../animationComponents/Section";
-import { useState } from "react";
 
 type Destination = {
   _id?: string;
@@ -15,10 +13,15 @@ type Destination = {
   visits?: number;
 };
 
-type DestinationsProps = {
-  data: Destination[];
+type DestinationsApiResponse = {
+  success: boolean;
+  count?: number;
+  destinations?: Destination[];
 };
 
+type DestinationsProps = {
+  data: DestinationsApiResponse;
+};
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,8 +31,6 @@ function truncateDesc(description: string) {
   if (words.length <= 5) return description;
   return words.slice(0, 5).join(" ") + " .....";
 }
-
-
 
 function toCardProps(dest: Destination, isTop: boolean) {
   return {
@@ -42,39 +43,99 @@ function toCardProps(dest: Destination, isTop: boolean) {
   };
 }
 
-
 const Destinations = ({ data: initialData }: DestinationsProps) => {
-  const [items, setItems] = useState<Destination[]>(initialData || []);
+    const initialSuccess = initialData?.success ?? false;
+    const initialItems =
+      initialSuccess && Array.isArray(initialData?.destinations)
+        ? initialData.destinations
+        : [];
+
+ 
+  const [items, setItems] = useState<Destination[]>(initialItems);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(!initialSuccess);
 
   const retry = async () => {
     setLoading(true);
     setError(false);
-    try {
-      const res = await fetch(`${API_URL}/api/destinations/top-destinations`);
-      if (!res.ok) throw new Error("Request failed");
-      const json = await res.json();
-      setItems(json);
-    } catch {
-      
-      setError(true);
-    } finally {
-      setLoading(false);
+   try {
+     const res = await fetch(`${API_URL}/api/destinations/top-destinations`);
+     if (!res.ok) throw new Error("Request failed");
+     const json: DestinationsApiResponse = await res.json();
+
+     if (!json.success || !Array.isArray(json.destinations)) {
+       throw new Error("Unsuccessful response");
+     }
+
+     setItems(json.destinations);
+   } catch {
+     setError(true);
+   } finally {
+     setLoading(false);
+   }
+  };
+
+  const sorted = [...items].sort((a, b) => b.rating - a.rating);
+  const top = sorted[0];
+  const rest = sorted.slice(1);
+
+  const renderGrid = () => {
+    if (sorted.length === 3) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full container my-[40px] auto-rows-[280px] max-w-7xl">
+          <div className="md:row-span-2">
+            <DestinationCard {...toCardProps(top, true)} height="h-full" />
+          </div>
+          <div>
+            <DestinationCard {...toCardProps(rest[0], false)} height="h-full" />
+          </div>
+          <div>
+            <DestinationCard {...toCardProps(rest[1], false)} height="h-full" />
+          </div>
+        </div>
+      );
     }
+
+    if (sorted.length <= 2) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full container my-[40px] max-w-7xl">
+          {sorted.map((dest, i) => (
+            <DestinationCard
+              key={dest._id ?? i}
+              {...toCardProps(dest, i === 0)}
+              height="h-[420px]"
+            />
+          ))}
+        </div>
+      );
+    }
+
+    // 4+ items — original masonry: featured card spans 2 rows, rest auto-flow
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container my-[40px] auto-rows-[280px] max-w-7xl">
+        <div className="lg:row-span-2">
+          <DestinationCard {...toCardProps(top, true)} height="h-full" />
+        </div>
+        {rest.map((dest, i) => (
+          <div key={dest._id ?? i}>
+            <DestinationCard {...toCardProps(dest, false)} height="h-full" />
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
     <Section>
-      <div className="w-full flex items-center justify-between flex-col py-[96px] px-6 ">
-        <div className="w-full container  flex items-center justify-center">
+      <div className="w-full flex items-center justify-between flex-col py-[96px] px-6">
+        <div className="w-full container flex items-center justify-center">
           <div className="flex flex-col items-center justify-between">
             <div className="inline-block text-[rgb(13,162,231)] font-[600] text-xs uppercase tracking-[0.25em] px-4 py-1.5 rounded-full bg-[rgb(13,162,231)]/10 border border-[rgb(13,162,231)]/20 mb-3">
               TOP DESTINATIONS
             </div>
             <h2 className="lg:text-5xl md:text-4xl font-[700] mt-4 text-[rgb(15,23,41)]">
               Explore Popular{" "}
-              <span className="relative inline-block ">
+              <span className="relative inline-block">
                 Destinations
                 <svg
                   className="absolute -bottom-1 left-0 w-full text-[rgb(13,162,231)]"
@@ -90,111 +151,36 @@ const Destinations = ({ data: initialData }: DestinationsProps) => {
                 </svg>
               </span>
             </h2>
-
-            <p className="text-[18px] mt-4  text-[rgb(101,117,139)] font-[500] text-center">
+            <p className="text-[18px] mt-4 text-[rgb(101,117,139)] font-[500] text-center">
               Handpicked locations for unforgettable experiences around the
               globe
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full container  my-[40px] auto-rows-[280px] max-w-7xl">
-          {/* BIG ITEM (spans 2 rows only on desktop) */}
-          <div className=" lg:row-span-2">
-            <DestinationCard
-              image="/images/dest-bali.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.9}
-              label="Trending"
-              height="h-full"
-              desc="Temples, rice terraces & pristine beaches"
-            />
+        {loading ? (
+          <div className="w-full flex items-center justify-center py-24 bg-gray-100 rounded-2xl my-10 max-w-7xl">
+            <div className="w-10 h-10 border-4 border-gray-300 border-t-[rgb(13,162,231)] rounded-full animate-spin" />
           </div>
-
-          {/* Other items */}
-          <div className="">
-            <DestinationCard
-              image="/images/dest-paris.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.8}
-              label="Most Loved"
-              height="h-full"
-              desc="Romance, art & world-class cuisine"
-            />
+        ) : error ? (
+          <div className="w-full flex flex-col items-center justify-center gap-4 py-24 bg-gray-100 rounded-2xl my-10 max-w-7xl">
+            <p className="text-gray-500">
+              Couldn't load destinations right now.
+            </p>
+            <button
+              onClick={retry}
+              className="px-6 py-2.5 rounded-xl border-2 border-[rgb(13,162,231)] text-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
+            >
+              Retry
+            </button>
           </div>
-          <div className="">
-            <DestinationCard
-              image="/images/dest-santorini.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.7}
-              label="Scenic"
-              height="h-full"
-              desc="Iconic sunsets & whitewashed villages"
-            />
+        ) : sorted.length === 0 ? (
+          <div className="w-full flex items-center justify-center py-24 bg-gray-100 rounded-2xl my-10 max-w-7xl">
+            <p className="text-gray-500">No destinations for now.</p>
           </div>
-          <div className="">
-            <DestinationCard
-              image="/images/dest-tokyo.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.9}
-              label="Top Pick"
-              height="h-full"
-              desc="Ancient tradition meets futuristic energy
-
-"
-            />
-          </div>
-          <div className="">
-            <DestinationCard
-              image="/images/dest-maldives.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={5}
-              label="Luxury"
-              height="h-full"
-              desc="Overwater villas & crystal-clear lagoons"
-            />
-          </div>
-          <div className="">
-            <DestinationCard
-              image="/images/dest-swiss.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.8}
-              label="Adventure"
-              height="h-full"
-              desc="Glaciers, ski slopes & alpine villages
-
-"
-            />
-          </div>
-          <div className="">
-            <DestinationCard
-              image="/images/1706.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={4.9}
-              label="Adventure"
-              height="h-full"
-              desc="Glaciers, ski slopes & alpine villages"
-            />
-          </div>
-          <div className="">
-            <DestinationCard
-              image="/images/21571.jpg"
-              location="Bali, Indonesia"
-              tours="120+"
-              rating={5}
-              label="Adventure"
-              height="h-full"
-              desc="Glaciers, ski slopes & alpine villages"
-            />
-          </div>
-        </div>
+        ) : (
+          renderGrid()
+        )}
 
         <button className="inline-flex items-center justify-center gap-2.5 group cursor-pointer px-8 py-3.5 text-[rgb(13,162,231)] rounded-2xl border-2 border-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300">
           View all Destinations
