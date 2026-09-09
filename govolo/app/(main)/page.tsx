@@ -46,7 +46,7 @@ export default async function Home() {
     success: false,
     destinations: [],
   });
-  const bookings = await safeJson(results[1], []);
+  const bookings = await safeJson(results[1], { success: false, bookings: [] });
   const testimonials = await safeJson(results[2], []);
   const blogs = await safeJson(results[3], []);
 
