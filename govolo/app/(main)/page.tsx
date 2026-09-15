@@ -67,3 +67,5 @@ export default async function Home() {
     </div>
   );
 }
+
+// fix the destiunations as there are issues
