@@ -46,13 +46,12 @@ export default async function Home() {
     success: false,
     destinations: [],
   });
-  console.log("DESTINATIONS:", destinations);
   const bookings = await safeJson(results[1], { success: false, bookings: [] });
   const testimonials = await safeJson(results[2], {
     success: false,
     testimonials: [],
   });
-  const blogs = await safeJson(results[3], []);
+  const blogs = await safeJson(results[3], { success: false, blogs: [] });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -70,3 +69,4 @@ export default async function Home() {
 }
 
 // fix the destiunations as there are issues
+
