@@ -4,11 +4,16 @@ import { useState } from "react";
 import DestinationCard from "../card/DestinationCard";
 import Section from "../animationComponents/Section";
 
+type Rating = {
+  average: number,
+  count: number
+}
+
 type Destination = {
   _id?: string;
   title: string;
   description: string;
-  rating: number;
+  rating: Rating;
   mainImage: string;
   visits?: number;
 };
@@ -37,7 +42,7 @@ function toCardProps(dest: Destination, isTop: boolean) {
     image: dest.mainImage,
     location: dest.title,
     tours: dest.visits ?? 0,
-    rating: dest.rating,
+    rating: dest.rating.average,
     label: isTop ? "Trending" : undefined,
     desc: truncateDesc(dest.description),
   };
@@ -75,7 +80,7 @@ const Destinations = ({ data: initialData }: DestinationsProps) => {
    }
   };
 
-  const sorted = [...items].sort((a, b) => b.rating - a.rating);
+  const sorted = [...items].sort((a, b) => b.rating.average - a.rating.average);
   const top = sorted[0];
   const rest = sorted.slice(1);
 
@@ -91,6 +96,19 @@ const Destinations = ({ data: initialData }: DestinationsProps) => {
           </div>
           <div>
             <DestinationCard {...toCardProps(rest[1], false)} height="h-full" />
+          </div>
+        </div>
+      );
+    }
+
+    if (sorted.length === 1) {
+      return (
+        <div className="w-full container my-[40px] max-w-7xl flex justify-center px-0">
+          <div className="w-full max-w-[560px]">
+            <DestinationCard
+              {...toCardProps(sorted[0], true)}
+              height="h-[420px]"
+            />
           </div>
         </div>
       );

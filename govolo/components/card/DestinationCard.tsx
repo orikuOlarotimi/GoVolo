@@ -28,7 +28,7 @@ export default function DestinationCard({
 
   return (
     <div
-      className={`relative ${width} ${height} rounded-2xl overflow-hidden shadow-lg group ${className}`}
+      className={`relative ${width} ${height} rounded-2xl  overflow-hidden shadow-lg group ${className}`}
     >
       {/* Image skeleton — shown until the real image finishes loading */}
       {!imgLoaded && (
@@ -39,12 +39,14 @@ export default function DestinationCard({
         src={image}
         alt={location}
         onLoad={() => setImgLoaded(true)}
-        className={`w-full h-full object-cover group-hover:scale-107 transition-opacity duration-500 ${
+        className={` absolute inset-0  w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${
           imgLoaded ? "opacity-100" : "opacity-0"
         }`}
       />
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-[rgb(14,161,231)]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
       {label && (
         <div className="absolute top-4 left-4 bg-orange-500 text-white text-sm px-3 py-1 rounded-full font-medium inline-flex items-center gap-1">
