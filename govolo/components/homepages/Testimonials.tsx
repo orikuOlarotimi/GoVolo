@@ -5,74 +5,113 @@ import { MapPin, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import Section from "../animationComponents/Section";
 
-const testimonials = [
-  {
-    id: "sj",
-    initials: "SJ",
-    name: "Sarah Johnson",
-    title: "Adventure Traveler",
-    location: "New York, USA",
-    rating: 5,
-    tag: "Maldives Honeymoon",
-    quote:
-      "GoVolo made our honeymoon absolutely magical. Every detail was perfectly planned — from the flights to the hotel surprises. I couldn't have asked for more!",
-  },
-  {
-    id: "mc",
-    initials: "MC",
-    name: "Micheal Akoh",
-    title: "Business Executive",
-    location: "Nigera, Lagos",
-    rating: 5,
-    tag: "Corporate Retreat",
-    quote:
-      "The efficiency and attention to detail from the team is unmatched. They handled a complex itinerary for 15 people flawlessly.",
-  },
-  {
-    id: "ew",
-    initials: "EW",
-    name: "Emma Watson",
-    title: "Solo Explorer",
-    location: "Sydney, AUS",
-    rating: 4,
-    tag: "European Backpacking",
-    quote:
-      "Felt incredibly safe and well-guided throughout my solo trip across Europe. The 24/7 support line was a lifesaver when my train was delayed.",
-  },
-  {
-    id: "dm",
-    initials: "DM",
-    name: "Rotimi Oriku",
-    title: "Family Vacationer",
-    location: "Nigeria, Akure",
-    rating: 5,
-    tag: "Nigerian Family Trip",
-    quote:
-      "Traveling with three kids is usually a nightmare, but the itinerary was paced perfectly for families. We actually got to relax!",
-  },
-];
+type TestimonialUser = {
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  city?: string;
+  country?: string;
+  avatar?: string;
+};
 
-export default function Testimonials() {
+type TestimonialDestination = {
+  title?: string;
+  location?: string;
+};
+
+type Testimonial = {
+  _id?: string;
+  rating: number;
+  comment?: string;
+  user?: TestimonialUser;
+  destination?: TestimonialDestination;
+};
+
+type TestimonialsApiResponse = {
+  success: boolean;
+  count?: number;
+  total?: number;
+  totalPages?: number;
+  page?: number;
+  testimonials?: Testimonial[];
+};
+
+type TestimonialsProps = {
+  data: TestimonialsApiResponse;
+};
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+function getInitials(user?: TestimonialUser) {
+  const first = user?.firstName?.[0] ?? "";
+  const last = user?.lastName?.[0] ?? "";
+  return (first + last).toUpperCase() || "?";
+}
+
+function getFullName(user?: TestimonialUser) {
+  const first = user?.firstName ?? "";
+  const last = user?.lastName ?? "";
+  return `${first} ${last}`.trim() || "Anonymous";
+}
+
+function getLocation(user?: TestimonialUser) {
+  const parts = [user?.city, user?.country].filter(Boolean);
+  return parts.join(", ");
+}
+
+export default function Testimonials({ data: initialData }: TestimonialsProps) {
+  const initialSuccess = initialData?.success ?? false;
+  const initialItems =
+    initialSuccess && Array.isArray(initialData?.testimonials)
+      ? initialData.testimonials
+      : [];
+
+  const [items, setItems] = useState<Testimonial[]>(initialItems);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(!initialSuccess);
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeTestimonial = testimonials[activeIndex];
+
+  const retry = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(`${API_URL}/api/testimonial?limit=4`);
+      if (!res.ok) throw new Error("Request failed");
+      const json: TestimonialsApiResponse = await res.json();
+
+      if (!json.success || !Array.isArray(json.testimonials)) {
+        throw new Error("Unsuccessful response");
+      }
+
+      setItems(json.testimonials);
+      setActiveIndex(0);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hasMultiple = items.length > 1;
+  const activeTestimonial = items[activeIndex];
 
   const nextTestimonial = () => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    setActiveIndex((prev) => (prev + 1) % items.length);
   };
 
   const prevTestimonial = () => {
-    setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+    setActiveIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
   };
 
   useEffect(() => {
+    if (!hasMultiple) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+      setActiveIndex((prev) => (prev + 1) % items.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [hasMultiple, items.length]);
 
-  // Helper to render stars
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
       <svg
@@ -84,7 +123,7 @@ export default function Testimonials() {
       </svg>
     ));
   };
- 
+
   return (
     <Section>
       <section className="py-24 bg-white relative">
@@ -117,118 +156,154 @@ export default function Testimonials() {
             </h2>
           </div>
 
-          {/* Main Testimonial Card */}
-          <Card className="border-slate-100 shadow-xl shadow-blue-900/5 mb-8 overflow-hidden rounded-3xl">
-            <CardContent className="p-0 flex flex-col md:flex-row">
-              {/* Left Column: User Profile */}
-              <div className="w-full md:w-1/3 bg-slate-50 p-8 md:p-10 border-r border-slate-100 flex flex-col items-start">
-                <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold mb-6 shadow-md shadow-blue-500/20">
-                  {activeTestimonial.initials}
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">
-                  {activeTestimonial.name}
-                </h3>
-                <p className="text-slate-500 text-sm mb-2">
-                  {activeTestimonial.title}
-                </p>
-                <div className="flex items-center text-slate-400 text-xs mb-6">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  {activeTestimonial.location}
-                </div>
-                <div className="flex gap-1 mb-6">
-                  {renderStars(activeTestimonial.rating)}
-                </div>
-                <div className="mt-auto bg-blue-50 text-blue-500 text-xs font-semibold px-4 py-2 rounded-full border border-blue-100">
-                  {activeTestimonial.tag}
-                </div>
-              </div>
-
-              {/* Right Column: Quote & Controls */}
-              <div className="w-full md:w-2/3 p-8 md:p-12 relative flex flex-col justify-center">
-                {/* Giant background quote mark */}
-                <Quote className="absolute top-8 right-8 h-32 w-32 text-slate-50 rotate-180" />
-
-                <div className="relative z-10">
-                  <Quote className="h-8 w-8 text-blue-300 mb-6" />
-                  <p className="text-xl md:text-2xl text-slate-700 leading-relaxed font-medium mb-12">
-                    {activeTestimonial.quote}
-                  </p>
-
-                  {/* Pagination and Arrows */}
-                  <div className="flex items-center justify-between mt-auto">
-                    {/* Dots */}
-                    <div className="flex gap-2">
-                      {testimonials.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveIndex(idx)}
-                          className={`h-2 rounded-full transition-all duration-300 ${
-                            idx === activeIndex
-                              ? "w-6 bg-blue-500"
-                              : "w-2 bg-slate-200 hover:bg-slate-300"
-                          }`}
-                          aria-label={`Go to testimonial ${idx + 1}`}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Arrows */}
-                    <div className="flex gap-3">
-                      <button
-                        title="Left arrow"
-                        onClick={prevTestimonial}
-                        className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        title="Right arrow"
-                        onClick={nextTestimonial}
-                        className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Thumbnail Selector */}
-          <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
-            {testimonials.map((test, idx) => (
+          {loading ? (
+            <div className="w-full flex items-center justify-center py-24 bg-gray-100 rounded-2xl my-10">
+              <div className="w-10 h-10 border-4 border-gray-300 border-t-[rgb(13,162,231)] rounded-full animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="w-full flex flex-col items-center justify-center gap-4 py-24 bg-gray-100 rounded-2xl my-10">
+              <p className="text-gray-500">An error has occurred.</p>
               <button
-                key={test.id}
-                onClick={() => setActiveIndex(idx)}
-                className={`shrink-0 flex items-center gap-3 p-3 rounded-2xl border-2 transition-all min-w-50 snap-start ${
-                  idx === activeIndex
-                    ? "border-blue-300 bg-blue-50/50 shadow-sm"
-                    : "border-slate-100 bg-white hover:border-blue-100 opacity-70 hover:opacity-100"
-                }`}
+                onClick={retry}
+                className="px-6 py-2.5 rounded-xl border-2 border-[rgb(13,162,231)] text-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
               >
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${
-                    idx === activeIndex
-                      ? "bg-blue-500"
-                      : "bg-linear-to-br from-indigo-400 to-purple-400"
-                  }`}
-                >
-                  {test.initials}
-                </div>
-                <div className="text-left flex-1">
-                  <p
-                    className={`text-sm font-bold ${idx === activeIndex ? "text-blue-600" : "text-slate-700"}`}
-                  >
-                    {test.name.split(" ")[0]}
-                  </p>
-                  <div className="flex gap-0.5 mt-0.5 scale-75 origin-left">
-                    {renderStars(test.rating)}
-                  </div>
-                </div>
+                Retry
               </button>
-            ))}
-          </div>
+            </div>
+          ) : items.length === 0 ? (
+            <div className="w-full flex items-center justify-center py-24 bg-gray-100 rounded-2xl my-10">
+              <p className="text-gray-500">No comments found.</p>
+            </div>
+          ) : (
+            <>
+              {/* Main Testimonial Card */}
+              <Card className="border-slate-100 shadow-xl shadow-blue-900/5 mb-8 overflow-hidden rounded-3xl">
+                <CardContent className="p-0 flex flex-col md:flex-row">
+                  {/* Left Column: User Profile */}
+                  <div className="w-full md:w-1/3 bg-slate-50 p-8 md:p-10 border-r border-slate-100 flex flex-col items-start">
+                    {activeTestimonial.user?.avatar ? (
+                      <img
+                        src={activeTestimonial.user.avatar}
+                        alt={getFullName(activeTestimonial.user)}
+                        className="w-20 h-20 rounded-2xl object-cover mb-6 shadow-md shadow-blue-500/20"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold mb-6 shadow-md shadow-blue-500/20">
+                        {getInitials(activeTestimonial.user)}
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold text-slate-900">
+                      {getFullName(activeTestimonial.user)}
+                    </h3>
+                    <p className="text-slate-500 text-sm mb-2">
+                      {activeTestimonial.user?.role ?? "Traveler"}
+                    </p>
+                    {getLocation(activeTestimonial.user) && (
+                      <div className="flex items-center text-slate-400 text-xs mb-6">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {getLocation(activeTestimonial.user)}
+                      </div>
+                    )}
+                    <div className="flex gap-1 mb-6">
+                      {renderStars(activeTestimonial.rating)}
+                    </div>
+                    {activeTestimonial.destination?.title && (
+                      <div className="mt-auto bg-blue-50 text-blue-500 text-xs font-semibold px-4 py-2 rounded-full border border-blue-100">
+                        {activeTestimonial.destination.title}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Right Column: Quote & Controls */}
+                  <div className="w-full md:w-2/3 p-8 md:p-12 relative flex flex-col justify-center">
+                    <Quote className="absolute top-8 right-8 h-32 w-32 text-slate-50 rotate-180" />
+
+                    <div className="relative z-10">
+                      <Quote className="h-8 w-8 text-blue-300 mb-6" />
+                      <p className="text-xl md:text-2xl text-slate-700 leading-relaxed font-medium mb-12">
+                        {activeTestimonial.comment}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-auto">
+                        {hasMultiple && (
+                          <div className="flex gap-2">
+                            {items.map((_, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => setActiveIndex(idx)}
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  idx === activeIndex
+                                    ? "w-6 bg-blue-500"
+                                    : "w-2 bg-slate-200 hover:bg-slate-300"
+                                }`}
+                                aria-label={`Go to testimonial ${idx + 1}`}
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {hasMultiple && (
+                          <div className="flex gap-3">
+                            <button
+                              title="Left arrow"
+                              onClick={prevTestimonial}
+                              className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors"
+                            >
+                              <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <button
+                              title="Right arrow"
+                              onClick={nextTestimonial}
+                              className="p-2 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-500 transition-colors"
+                            >
+                              <ChevronRight className="h-5 w-5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Thumbnail Selector */}
+              {hasMultiple && (
+                <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+                  {items.map((test, idx) => (
+                    <button
+                      key={test._id ?? idx}
+                      onClick={() => setActiveIndex(idx)}
+                      className={`shrink-0 flex items-center gap-3 p-3 rounded-2xl border-2 transition-all min-w-50 snap-start ${
+                        idx === activeIndex
+                          ? "border-blue-300 bg-blue-50/50 shadow-sm"
+                          : "border-slate-100 bg-white hover:border-blue-100 opacity-70 hover:opacity-100"
+                      }`}
+                    >
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold ${
+                          idx === activeIndex
+                            ? "bg-blue-500"
+                            : "bg-linear-to-br from-indigo-400 to-purple-400"
+                        }`}
+                      >
+                        {getInitials(test.user)}
+                      </div>
+                      <div className="text-left flex-1">
+                        <p
+                          className={`text-sm font-bold ${idx === activeIndex ? "text-blue-600" : "text-slate-700"}`}
+                        >
+                          {test.user?.firstName ?? "Traveler"}
+                        </p>
+                        <div className="flex gap-0.5 mt-0.5 scale-75 origin-left">
+                          {renderStars(test.rating)}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
     </Section>

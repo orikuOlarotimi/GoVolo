@@ -8,18 +8,65 @@ import CTA from "@/components/homepages/CTA";
 import Contact from "@/components/homepages/Contact";
 import Newsletter from "@/components/homepages/Newsletter";
 
-export default function Home() {
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+async function safeJson<T = any>(
+  result: PromiseSettledResult<Response>,
+  fallback: T,
+): Promise<T> {
+  if (result.status !== "fulfilled") return fallback;
+
+  const res = result.value;
+  if (!res.ok) return fallback;
+
+  try {
+    return await res.json();
+  } catch {
+    return fallback;
+  }
+}
+
+export default async function Home() {
+  const results = await Promise.allSettled([
+    fetch(`${API_URL}/api/destinations/top-destinations`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${API_URL}/api/booking?limit=3`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${API_URL}/api/testimonial?limit=4`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${API_URL}/api/blogs?limit=3`, {
+      next: { revalidate: 60 },
+    }),
+  ]);
+
+  const destinations = await safeJson(results[0], {
+    success: false,
+    destinations: [],
+  });
+  const bookings = await safeJson(results[1], { success: false, bookings: [] });
+  const testimonials = await safeJson(results[2], {
+    success: false,
+    testimonials: [],
+  });
+  const blogs = await safeJson(results[3], { success: false, blogs: [] });
+
   return (
     <div className="flex flex-col min-h-screen">
       <MainHero />
-      <Destinations />
-      <AdventureCard />
+      <Destinations data={destinations} />
+      <AdventureCard data={bookings} />
       <Features />
-      <Testimonials />
-      <Blog />
+      <Testimonials data={testimonials} />
+      <Blog data={blogs} />
       <CTA />
       <Contact />
       <Newsletter />
     </div>
   );
 }
+
+// fix the destiunations as there are issues
+

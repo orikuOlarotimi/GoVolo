@@ -1,6 +1,6 @@
 import React from "react";
 type post = {
-  id: number;
+  id: string;
   img: string;
   tag: string;
   title: string;
