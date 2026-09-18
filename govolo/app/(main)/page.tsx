@@ -29,16 +29,16 @@ async function safeJson<T = any>(
 export default async function Home() {
   const results = await Promise.allSettled([
     fetch(`${API_URL}/api/destinations/top-destinations`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     }),
     fetch(`${API_URL}/api/booking?limit=3`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     }),
     fetch(`${API_URL}/api/testimonial?limit=4`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     }),
     fetch(`${API_URL}/api/blogs?limit=3`, {
-      next: { revalidate: 60 },
+      cache: "no-store",
     }),
   ]);
 
@@ -69,4 +69,4 @@ export default async function Home() {
 }
 
 // fix the destiunations as there are issues
-
+// fix the layout of the blogs  as there are issues and then fix the label of the destinations as its not present in the backend 

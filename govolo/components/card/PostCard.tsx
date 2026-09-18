@@ -22,7 +22,7 @@ const PostCard = ({ img, tag, title, para, date, time }: post) => {
         </span>
       </div>
 
-      <div className="flex flex-col items-center justify-between w-full h-full p-5">
+      <div className="flex flex-col w-full h-full p-5">
         <div className="flex items-center justify-between mb-2.5 w-full">
           <span className="flex items-center gap-1 text-[rgb(101,117,139)] text-xs">
             <svg
@@ -66,7 +66,7 @@ const PostCard = ({ img, tag, title, para, date, time }: post) => {
         <h1 className="w-full text-[16px] font-bold leading-snug mb-2 group-hover:text-[rgb(13,162,231)] transition-colors duration-200 line-clamp-2">
           {title}
         </h1>
-        <p className="text-xs leading-relaxed line-clamp-2 text-[rgb(101,117,139)]">
+        <p className="text-xs leading-relaxed line-clamp-2 text-[rgb(101,117,139)] text-start">
           {para}
         </p>
         <div className="flex items-center gap-1.5 text-[rgb(13,162,231)] text-xs font-semibold  mt-3 opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100  transition-all duration-200">

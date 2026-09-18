@@ -33,7 +33,7 @@ type BlogProps = {
   data: BlogsApiResponse;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const FIXED_READ_TIME = "10 min read";
 
 function formatDate(dateString: string) {
@@ -49,8 +49,8 @@ function formatDate(dateString: string) {
 function truncateDetails(details: string) {
   if (!details) return "";
   const words = details.trim().split(/\s+/);
-  if (words.length <= 12) return details;
-  return words.slice(0, 12).join(" ") + "...";
+  if (words.length <= 18) return details;
+  return words.slice(0, 18).join(" ") + "...";
 }
 
 const Blog = ({ data: initialData }: BlogProps) => {
@@ -191,7 +191,7 @@ const Blog = ({ data: initialData }: BlogProps) => {
 
     if (items.length === 2) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-6">
           {renderFeaturedCard(featured, "h-[340px]")}
           {rest.map((blog) => (
             <PostCard

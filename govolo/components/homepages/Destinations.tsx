@@ -3,7 +3,7 @@
 import { useState } from "react";
 import DestinationCard from "../card/DestinationCard";
 import Section from "../animationComponents/Section";
-
+import Link from "next/link";
 type Rating = {
   average: number,
   count: number
@@ -28,7 +28,7 @@ type DestinationsProps = {
   data: DestinationsApiResponse;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function truncateDesc(description: string) {
   if (!description) return "";
@@ -200,24 +200,29 @@ const Destinations = ({ data: initialData }: DestinationsProps) => {
           renderGrid()
         )}
 
-        <button className="inline-flex items-center justify-center gap-2.5 group cursor-pointer px-8 py-3.5 text-[rgb(13,162,231)] rounded-2xl border-2 border-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300">
-          View all Destinations
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
+        {items.length > 0 && (
+          <Link
+            href="/destinations?page=1&limit=10"
+            className="inline-flex items-center justify-center gap-2.5 group cursor-pointer px-8 py-3.5 text-[rgb(13,162,231)] rounded-2xl border-2 border-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
           >
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </button>
+            View all Destinations
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </Link>
+        )}
       </div>
     </Section>
   );

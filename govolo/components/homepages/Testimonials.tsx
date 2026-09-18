@@ -40,7 +40,7 @@ type TestimonialsProps = {
   data: TestimonialsApiResponse;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 function getInitials(user?: TestimonialUser) {
   const first = user?.firstName?.[0] ?? "";
@@ -220,7 +220,7 @@ export default function Testimonials({ data: initialData }: TestimonialsProps) {
 
                     <div className="relative z-10">
                       <Quote className="h-8 w-8 text-blue-300 mb-6" />
-                      <p className="text-xl md:text-2xl text-slate-700 leading-relaxed font-medium mb-12">
+                      <p className="text-lg md:text-xl text-slate-700 leading-relaxed font-medium mb-12">
                         {activeTestimonial.comment}
                       </p>
 

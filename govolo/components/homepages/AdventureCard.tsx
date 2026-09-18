@@ -37,7 +37,7 @@ type AdventureCardProps = {
   data: BookingsApiResponse;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const TAG_BACKGROUNDS = [
   "bg-gradient-to-br from-sky-400 to-blue-600",
