@@ -202,7 +202,7 @@ const Destinations = ({ data: initialData }: DestinationsProps) => {
 
         {items.length > 0 && (
           <Link
-            href="/destinations?page=1&limit=10"
+            href="/destinations"
             className="inline-flex items-center justify-center gap-2.5 group cursor-pointer px-8 py-3.5 text-[rgb(13,162,231)] rounded-2xl border-2 border-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
           >
             View all Destinations
