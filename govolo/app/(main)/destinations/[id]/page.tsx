@@ -26,6 +26,7 @@
     return (
       <div>
         <DestinationDetails id={id} initialData={data} />
+        
       </div>
     );
   }
