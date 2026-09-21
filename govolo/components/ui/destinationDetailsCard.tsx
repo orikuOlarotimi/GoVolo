@@ -1,6 +1,19 @@
 import React from "react";
 
-const DestinationDetailsCard = () => {
+type Rating = {
+  average: number;
+  count: number;
+};
+
+type DestinationDetailsCardProps = {
+  rating: Rating;
+  description: string;
+};
+
+const DestinationDetailsCard = ({
+  rating,
+  description,
+}: DestinationDetailsCardProps) => {
   return (
     <div>
       <div className="container mx-auto px-4 py-10">
@@ -78,7 +91,7 @@ const DestinationDetailsCard = () => {
                 </div>
                 <p className="text-xs text-[rgb(99,111,129)] mb-0.5">Rating</p>
                 <p className="text-sm font-bold text-[rgb(15,23,41)]">
-                  4.9 / 5.0
+                  {rating.average} / 5.0
                 </p>
               </div>
             </div>
@@ -102,12 +115,7 @@ const DestinationDetailsCard = () => {
                     About This Trip
                   </h2>
                   <p className="text-[rgb(99,111,129)] leading-relaxed">
-                    Bali is the world's most beloved island for good reason.
-                    From misty volcanic peaks and emerald rice terraces to
-                    sacred Hindu temples and powder-white beaches — every corner
-                    of this Indonesian paradise captivates. Our 5-day curated
-                    package takes you beyond the tourist trail and into the soul
-                    of Bali, guided by locals who know every hidden gem.
+                   {description}
                   </p>
                   <p className="text-[rgb(99,111,129)] leading-relaxed mt-3">
                     Stay in a 5-star beachfront villa in Seminyak, explore the

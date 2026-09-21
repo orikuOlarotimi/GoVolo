@@ -25,8 +25,7 @@
 
     return (
       <div>
-        <DestinationDetails id={id} initialData={data} />
-        
+        <DestinationDetails id={id} initialData={data} />  
       </div>
     );
   }
