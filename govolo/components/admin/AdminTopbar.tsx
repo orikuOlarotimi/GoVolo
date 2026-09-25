@@ -8,7 +8,7 @@ export default function AdminTopbar() {
           {/* placeholder initial — wire to real admin name once AuthContext is read here */}
           A
         </div>
-        {/* NEEDS UPDATE */}
+
       </div>
     </header>
   );
