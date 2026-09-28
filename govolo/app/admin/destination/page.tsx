@@ -165,7 +165,7 @@ export default function PostDestinationForm() {
        body: formData,
        requiresAuth: true,
      });
-     console.log(user?.email)
+
      if (user?.email) await clearDraft(user.email);
      setData(initialData);
      setStep(0);
