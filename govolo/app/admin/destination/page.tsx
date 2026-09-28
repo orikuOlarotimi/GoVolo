@@ -97,9 +97,38 @@ export default function PostDestinationForm() {
   const goBack = () => setStep((s) => Math.max(s - 1, 0));
 
  const handleSubmit = async () => {
-   setSubmitting(true);
+  
+   if (
+     !data.title.trim() ||
+     !data.description.trim() ||
+     !data.location.trim() ||
+     !data.price ||
+     !data.mainImage
+   ) {
+     setStep(0);
+     return;
+   }
+    setSubmitting(true);
    try {
      const formData = new FormData();
+
+     const cleanHighlights = data.tripHighlights.filter(
+       (h) => h.title.trim() && h.description.trim(),
+     );
+     const cleanList = (list: string[]) =>
+       list.map((s) => s.trim()).filter(Boolean);
+     const cleanItinerary = data.itinerary
+       .filter((d) => d.title.trim())
+       .map((d, i) => ({ ...d, day: i + 1 }));
+     const cleanRoomTypes = data.roomTypes
+       .filter((r, i) => i === 0 || (r.name.trim() && Number(r.price) > 0))
+       .map((r, i) => ({
+         ...r,
+         price: i === 0 ? Number(data.price) : Number(r.price),
+       }));
+     const cleanAddOns = data.addOns
+       .filter((a) => a.name.trim() && Number(a.price) > 0)
+       .map((a) => ({ ...a, price: Number(a.price) }));
 
      formData.append("title", data.title.trim());
      formData.append("description", data.description.trim());
@@ -113,23 +142,16 @@ export default function PostDestinationForm() {
      };
      formData.append("groupSize", JSON.stringify(groupSize));
 
-     formData.append("tripHighlights", JSON.stringify(data.tripHighlights));
-     formData.append("included", JSON.stringify(data.included));
-     formData.append("notIncluded", JSON.stringify(data.notIncluded));
-     formData.append("amenities", JSON.stringify(data.amenities));
-     formData.append("itinerary", JSON.stringify(data.itinerary));
+     formData.append("tripHighlights", JSON.stringify(cleanHighlights));
+     formData.append("included", JSON.stringify(cleanList(data.included)));
      formData.append(
-       "roomTypes",
-       JSON.stringify(
-         data.roomTypes.map((r) => ({ ...r, price: Number(r.price) })),
-       ),
+       "notIncluded",
+       JSON.stringify(cleanList(data.notIncluded)),
      );
-     formData.append(
-       "addOns",
-       JSON.stringify(
-         data.addOns.map((a) => ({ ...a, price: Number(a.price) })),
-       ),
-     );
+     formData.append("amenities", JSON.stringify(cleanList(data.amenities)));
+     formData.append("itinerary", JSON.stringify(cleanItinerary));
+     formData.append("roomTypes", JSON.stringify(cleanRoomTypes));
+     formData.append("addOns", JSON.stringify(cleanAddOns));
 
      if (data.mainImage) {
        formData.append("mainImage", data.mainImage);
@@ -143,7 +165,7 @@ export default function PostDestinationForm() {
        body: formData,
        requiresAuth: true,
      });
-
+     console.log(user?.email)
      if (user?.email) await clearDraft(user.email);
      setData(initialData);
      setStep(0);

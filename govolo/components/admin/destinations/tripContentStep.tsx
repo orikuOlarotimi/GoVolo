@@ -75,10 +75,6 @@ export default function TripContentStep({
     onChange({ ...data, [field]: data[field].filter((_, i) => i !== index) });
   };
 
-  const canProceed =
-    data.tripHighlights.length > 0 &&
-    data.tripHighlights.every((h) => h.title.trim() && h.description.trim());
-
   const renderStringList = (
     label: string,
     field: "included" | "notIncluded" | "amenities",
@@ -189,7 +185,6 @@ export default function TripContentStep({
         </button>
         <button
           onClick={onNext}
-          disabled={!canProceed}
           className="px-8 py-3 rounded-xl bg-[rgb(13,162,231)] text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[rgb(13,162,231)]/90 transition-all"
         >
           Next

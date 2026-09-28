@@ -55,9 +55,7 @@ export default function ItineraryStep({
     onChange({ ...data, itinerary: updated });
   };
 
-  const canProceed =
-    data.itinerary.length > 0 &&
-    data.itinerary.every((d) => d.title.trim() && d.description.trim());
+
 
   return (
     <div className="space-y-6">
@@ -113,7 +111,6 @@ export default function ItineraryStep({
         </button>
         <button
           onClick={onNext}
-          disabled={!canProceed}
           className="px-8 py-3 rounded-xl bg-[rgb(13,162,231)] text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[rgb(13,162,231)]/90 transition-all"
         >
           Next

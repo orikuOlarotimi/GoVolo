@@ -85,10 +85,11 @@ export default function PricingStep({
   };
 
   const canSubmit =
-    data.roomTypes.every((r) => r.name.trim() && r.price > 0) &&
+    data.roomTypes.every((r, i) => i === 0 || (r.name.trim() && r.price > 0)) &&
     data.addOns.every((a) => a.name.trim() && a.price.trim());
 
   return (
+    
     <div className="space-y-10">
       <h2 className="text-xl font-bold text-[rgb(15,23,42)]">Pricing</h2>
 
