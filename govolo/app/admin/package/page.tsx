@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { X, Plus, MapPin, Check, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { useApiFetch } from "../../../utils/useApiFetch";
 import { ApiError } from "@/utils/apiClient";
+import { toast } from "sonner";
 
 type MyDestination = {
   _id: string;
@@ -22,7 +24,8 @@ const inputClass =
 
 export default function PostPackageForm() {
   const { user, loading: authLoading } = useAuth();
-  const apiFetch = useApiFetch();
+    const apiFetch = useApiFetch();
+    const pathname = usePathname();
 
   const [destinations, setDestinations] = useState<MyDestination[]>([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -68,7 +71,21 @@ export default function PostPackageForm() {
     }
     loadDestinations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authLoading, user?.email]);
+  }, [authLoading, user?.email, pathname]);
+    useEffect(() => {
+      console.log("DESTINATIONS COMPONENT MOUNTED");
+
+      return () => {
+        console.log("DESTINATIONS COMPONENT UNMOUNTED");
+      };
+    }, []);
+    useEffect(() => {
+      console.log("DESTINATIONS EFFECT RAN");
+
+      return () => {
+        console.log("DESTINATIONS EFFECT CLEANUP");
+      };
+    }, []);
 
   const selected = destinations.find((d) => d._id === selectedId) ?? null;
 
@@ -124,7 +141,7 @@ export default function PostPackageForm() {
       setGroupMin("");
       setGroupMax("");
       setIncluded([]);
-      setAddOns([]);
+        setAddOns([]);
     } catch (error) {
       setSubmitError(
         error instanceof ApiError
@@ -167,7 +184,7 @@ export default function PostPackageForm() {
             You haven&apos;t created any destinations yet.
           </p>
           <Link
-            href="/admin/destinations/new"
+            href="/admin/destination"
             className="px-6 py-2.5 rounded-xl bg-[rgb(13,162,231)] text-white font-semibold hover:bg-[rgb(13,162,231)]/90 transition-all"
           >
             Create a destination

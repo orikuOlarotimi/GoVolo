@@ -9,11 +9,13 @@ import {
   Newspaper,
   MessageSquare,
   Users,
+  HandCoins
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Destinations", href: "/admin/destination", icon: MapPin },
+  { label: "Packages", href: "/admin/package", icon: HandCoins },
   { label: "Bookings", href: "/admin/bookings", icon: CalendarCheck },
   { label: "Blogs", href: "/admin/blogs", icon: Newspaper },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
