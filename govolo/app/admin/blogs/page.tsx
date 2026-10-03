@@ -10,6 +10,7 @@ type SectionRow = {
   content: string;
   images: File[];
   captions: string[];
+  previews: string[];
 };
 
 const inputClass =
@@ -31,7 +32,7 @@ export default function CreateBlogForm() {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
 
   const [sections, setSections] = useState<SectionRow[]>([
-    { title: "", content: "", images: [], captions: [] },
+    { title: "", content: "", images: [], previews: [], captions: [] },
   ]);
 
   const [quickFacts, setQuickFacts] = useState<string[]>([]);
@@ -73,7 +74,7 @@ export default function CreateBlogForm() {
   const addSection = () => {
     setSections((prev) => [
       ...prev,
-      { title: "", content: "", images: [], captions: [] },
+      { title: "", content: "", images: [], previews: [], captions: [] },
     ]);
   };
 
@@ -92,42 +93,57 @@ export default function CreateBlogForm() {
     );
   };
 
-  const addSectionImages = (
-    i: number,
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+ const addSectionImages = (
+   i: number,
+   e: React.ChangeEvent<HTMLInputElement>,
+ ) => {
+   const files = e.target.files;
+   if (!files || files.length === 0) return;
 
-    setSections((prev) =>
-      prev.map((s, idx) => {
-        if (idx !== i) return s;
-        const combined = [...s.images, ...Array.from(files)].slice(
-          0,
-          MAX_SECTION_IMAGES,
-        );
-        const combinedCaptions = [
-          ...s.captions,
-          ...Array.from(files).map(() => ""),
-        ].slice(0, MAX_SECTION_IMAGES);
-        return { ...s, images: combined, captions: combinedCaptions };
-      }),
-    );
-    e.target.value = "";
-  };
+   const newFiles = Array.from(files);
+   const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
 
-  const removeSectionImage = (sectionIndex: number, imageIndex: number) => {
-    setSections((prev) =>
-      prev.map((s, idx) => {
-        if (idx !== sectionIndex) return s;
-        return {
-          ...s,
-          images: s.images.filter((_, i) => i !== imageIndex),
-          captions: s.captions.filter((_, i) => i !== imageIndex),
-        };
-      }),
-    );
+   setSections((prev) =>
+     prev.map((s, idx) => {
+       if (idx !== i) return s;
+
+       const combinedImages = [...s.images, ...newFiles];
+       const combinedPreviews = [...s.previews, ...newPreviews];
+       const combinedCaptions = [...s.captions, ...newFiles.map(() => "")];
+
+       const overflow = combinedImages.length - MAX_SECTION_IMAGES;
+       if (overflow > 0) {
+         combinedPreviews
+           .slice(-overflow)
+           .forEach((url) => URL.revokeObjectURL(url));
+       }
+
+       return {
+         ...s,
+         images: combinedImages.slice(0, MAX_SECTION_IMAGES),
+         previews: combinedPreviews.slice(0, MAX_SECTION_IMAGES),
+         captions: combinedCaptions.slice(0, MAX_SECTION_IMAGES),
+       };
+     }),
+   );
+   e.target.value = "";
   };
+  
+const removeSectionImage = (sectionIndex: number, imageIndex: number) => {
+  setSections((prev) =>
+    prev.map((s, idx) => {
+      if (idx !== sectionIndex) return s;
+      const removedUrl = s.previews[imageIndex];
+      if (removedUrl) URL.revokeObjectURL(removedUrl);
+      return {
+        ...s,
+        images: s.images.filter((_, i) => i !== imageIndex),
+        previews: s.previews.filter((_, i) => i !== imageIndex),
+        captions: s.captions.filter((_, i) => i !== imageIndex),
+      };
+    }),
+  );
+};
 
   const updateCaption = (
     sectionIndex: number,
@@ -162,12 +178,11 @@ export default function CreateBlogForm() {
   // ---------- Submit ----------
   const canSubmit =
     title.trim() !== "" &&
-    tags.length > 0 &&
     shortDescription.trim() !== "" &&
     !!mainImage &&
     Number(readTimeMinutes) > 0 &&
     sections[0]?.title.trim() !== "" &&
-    sections[0]?.content.trim() !== "";
+    sections[0]?.content.trim() !== "" &&
   quickFacts.every((f) => countChars(f) <= 40);
 
   const handleSubmit = async () => {
@@ -227,7 +242,7 @@ export default function CreateBlogForm() {
       setTags([]);
       setMainImage(null);
       setMainImagePreview(null);
-      setSections([{ title: "", content: "", images: [], captions: [] }]);
+      setSections([{ title: "", content: "", images: [], previews: [], captions: [] }]);
       setQuickFacts([]);
     } catch (error) {
       setSubmitError(
@@ -455,7 +470,7 @@ export default function CreateBlogForm() {
                     <div key={imgIdx} className="flex flex-col gap-1">
                       <div className="relative w-28 h-20 rounded-lg overflow-hidden border border-border">
                         <img
-                          src={URL.createObjectURL(file)}
+                          src={section.previews[imgIdx]}
                           alt=""
                           className="w-full h-full object-cover"
                         />
