@@ -9,9 +9,9 @@ type BlogAuthor = {
 };
 
 type Blog = {
-  _id: string;
+  id: string;
   title: string;
-  image: string;
+  mainImage: string;
   tag: string;
   details: string;
   author?: BlogAuthor;
@@ -96,7 +96,7 @@ const Blog = ({ data: initialData }: BlogProps) => {
       className={`group relative w-full ${heightClass} rounded-2xl overflow-hidden shadow-lg cursor-pointer`}
     >
       <img
-        src={blog.image}
+        src={blog.mainImage}
         alt={blog.title}
         className="object-cover w-full h-full group-hover:scale-107 transition duration-500"
       />
@@ -195,9 +195,9 @@ const Blog = ({ data: initialData }: BlogProps) => {
           {renderFeaturedCard(featured, "h-[340px]")}
           {rest.map((blog) => (
             <PostCard
-              key={blog._id}
-              id={blog._id}
-              img={blog.image}
+              key={blog.id}
+              id={blog.id}
+              img={blog.mainImage}
               tag={blog.tag}
               title={blog.title}
               para={truncateDetails(blog.details)}
@@ -217,9 +217,9 @@ const Blog = ({ data: initialData }: BlogProps) => {
         </div>
         {rest.map((blog) => (
           <PostCard
-            key={blog._id}
-            id={blog._id}
-            img={blog.image}
+            key={blog.id}
+            id={blog.id}
+            img={blog.mainImage}
             tag={blog.tag}
             title={blog.title}
             para={truncateDetails(blog.details)}

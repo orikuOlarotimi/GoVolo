@@ -7,9 +7,15 @@ type Rating = { average: number; count: number };
 
 type Creator = {
   _id: string;
-  name?: string;
+  fullName?: string;
+  lastName?: string;
   email?: string;
 };
+
+type RoomType = { name: string; description?: string; price: number };
+type TripHighlight = { title: string; description: string };
+type ItineraryDay = { day: number; title: string; description?: string };
+type AddOn = { name: string; price: number; unit?: string };
 
 type Destination = {
   _id: string;
@@ -22,6 +28,13 @@ type Destination = {
   visits?: number;
   rating: Rating;
   createdBy?: Creator;
+  included: string[];
+  notIncluded: string[];
+  amenities: string[];
+  roomTypes: RoomType[];
+  tripHighlights: TripHighlight[];
+  itinerary: ItineraryDay[];
+  addOns: AddOn[];
 };
 
 type DestinationApiResponse = {
@@ -63,7 +76,6 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-32 bg-gray-100">
@@ -87,7 +99,7 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
   }
 
   const destination = data.destination;
-  console.log(destination)
+  console.log("kdkdk", destination)
   const gallery = [destination.mainImage, ...(destination.images ?? [])];
 
   const goPrev = () =>
@@ -237,8 +249,7 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
       </div>
 
       <DestinationDetailsCard
-        rating={destination.rating}
-        description={destination.description}
+        data={destination}
       />
     </div>
   );
