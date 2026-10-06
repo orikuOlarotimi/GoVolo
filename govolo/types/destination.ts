@@ -1,12 +1,17 @@
-type Rating = { average: number; count: number };
-type GroupSize = { min: number; max: number };
-type RoomType = { name: string; description?: string; price: number };
-type TripHighlight = { title: string; description: string };
-type ItineraryDay = { day: number; title: string; description?: string };
-type AddOn = { name: string; price: number; unit?: string };
-type Creator = { _id: string; email: string };
+export type Rating = { average: number; count: number };
+export type GroupSize = { min: number; max: number };
+export type RoomType = { name: string; description?: string; price: number };
+export type TripHighlight = { title: string; description: string };
+export type ItineraryDay = { day: number; title: string; description?: string };
+export type AddOn = { name: string; price: number; unit?: string };
+export type Creator = {
+  _id: string;
+  email: string;
+  fullName?: string;
+  lastName?: string;
+};
 
-type Destination = {
+export type Destination = {
   _id: string;
   title: string;
   description: string;
@@ -28,6 +33,6 @@ type Destination = {
   visits: number;
 };
 
-type DestinationDetailsCardProps = {
+export type DestinationDetailsCardProps = {
   data: Destination;
 };

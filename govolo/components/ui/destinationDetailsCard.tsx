@@ -3,36 +3,37 @@
 import { useState } from "react";
 import ItineraryTab from "../../components/ui/ItineraryTab";
 import ReviewsTab from "../../components/ui/ReviewsTab";
+import type { Destination } from "@/types/destination";
 
-type Rating = { average: number; count: number };
-type GroupSize = { min: number; max: number };
-type RoomType = { name: string; description?: string; price: number };
-type TripHighlight = { title: string; description: string };
-type ItineraryDay = { day: number; title: string; description?: string };
-type AddOn = { name: string; price: number; unit?: string };
-type Creator = { _id: string; email: string };
+// type Rating = { average: number; count: number };
+// type GroupSize = { min: number; max: number };
+// type RoomType = { name: string; description?: string; price: number };
+// type TripHighlight = { title: string; description: string };
+// type ItineraryDay = { day: number; title: string; description?: string };
+// type AddOn = { name: string; price: number; unit?: string };
+// type Creator = { _id: string; email: string };
 
-type Destination = {
-  _id: string;
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  mainImage: string;
-  images?: string[];
-  duration?: string;
-  groupSize?: GroupSize;
-  rating: Rating;
-  included: string[];
-  notIncluded: string[];
-  amenities: string[];
-  roomTypes: RoomType[];
-  tripHighlights: TripHighlight[];
-  itinerary: ItineraryDay[];
-  addOns: AddOn[];
-  createdBy?: Creator;
-  visits: number;
-};
+// type Destination = {
+//   _id: string;
+//   title: string;
+//   description: string;
+//   location: string;
+//   price: number;
+//   mainImage: string;
+//   images?: string[];
+//   duration?: string;
+//   groupSize?: GroupSize;
+//   rating: Rating;
+//   included: string[];
+//   notIncluded: string[];
+//   amenities: string[];
+//   roomTypes: RoomType[];
+//   tripHighlights: TripHighlight[];
+//   itinerary: ItineraryDay[];
+//   addOns: AddOn[];
+//   createdBy?: Creator;
+//   visits: number;
+// };
 
 type DestinationDetailsCardProps = {
   data: Destination;
@@ -187,7 +188,7 @@ const DestinationDetailsCard = ({ data }: DestinationDetailsCardProps) => {
                     Trip Highlights
                   </h2>
                   {data.tripHighlights.length === 0 ? (
-                    <p className="text-center text-sm text-[rgb(99,111,129)] py-6">
+                    <p className="text-left text-sm text-[rgb(99,111,129)] py-6">
                       Trip highlights unavailable for this trip.
                     </p>
                   ) : (
@@ -250,7 +251,7 @@ const DestinationDetailsCard = ({ data }: DestinationDetailsCardProps) => {
                       What's Included
                     </h3>
                     {data.included.length === 0 ? (
-                      <p className="text-center text-sm text-[rgb(99,111,129)] py-4">
+                      <p className="text-left text-sm text-[rgb(99,111,129)] py-4">
                         No included items listed for this trip.
                       </p>
                     ) : (
@@ -290,7 +291,7 @@ const DestinationDetailsCard = ({ data }: DestinationDetailsCardProps) => {
                       Not Included
                     </h3>
                     {data.notIncluded.length === 0 ? (
-                      <p className="text-center text-sm text-[rgb(99,111,129)] py-4">
+                      <p className="text-left text-sm text-[rgb(99,111,129)] py-4">
                         No excluded items listed for this trip.
                       </p>
                     ) : (
