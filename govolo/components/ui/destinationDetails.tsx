@@ -2,44 +2,12 @@
 
 import { useState } from "react";
 import DestinationDetailsCard from "@/components/ui/destinationDetailsCard";
-import type { Destination } from "@/types/destination";
-  
-// type Rating = { average: number; count: number };
-
-// type Creator = {
-//   _id: string;
-//   fullName?: string;
-//   lastName?: string;
-//   email?: string;
-// };
-
-// type RoomType = { name: string; description?: string; price: number };
-// type TripHighlight = { title: string; description: string };
-// type ItineraryDay = { day: number; title: string; description?: string };
-// type AddOn = { name: string; price: number; unit?: string };
-
-// type Destination = {
-//   _id: string;
-//   title: string;
-//   description: string;
-//   location: string;
-//   price: number;
-//   mainImage: string;
-//   images?: string[];
-//   visits?: number;
-//   rating: Rating;
-//   createdBy?: Creator;
-//   included: string[];
-//   notIncluded: string[];
-//   amenities: string[];
-//   roomTypes: RoomType[];
-//   tripHighlights: TripHighlight[];
-//   itinerary: ItineraryDay[];
-//   addOns: AddOn[];
-// };
+import type { Destination, Review } from "@/types/destination";
+ 
 
 type DestinationApiResponse = {
   success: boolean;
+  reviews?: Review[];
   destination?: Destination;
 };
 
@@ -250,6 +218,7 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
 
       <DestinationDetailsCard
         data={destination}
+        reviews={initialData.reviews ?? []}
       />
     </div>
   );

@@ -3,48 +3,23 @@
 import { useState } from "react";
 import ItineraryTab from "../../components/ui/ItineraryTab";
 import ReviewsTab from "../../components/ui/ReviewsTab";
-import type { Destination } from "@/types/destination";
-
-// type Rating = { average: number; count: number };
-// type GroupSize = { min: number; max: number };
-// type RoomType = { name: string; description?: string; price: number };
-// type TripHighlight = { title: string; description: string };
-// type ItineraryDay = { day: number; title: string; description?: string };
-// type AddOn = { name: string; price: number; unit?: string };
-// type Creator = { _id: string; email: string };
-
-// type Destination = {
-//   _id: string;
-//   title: string;
-//   description: string;
-//   location: string;
-//   price: number;
-//   mainImage: string;
-//   images?: string[];
-//   duration?: string;
-//   groupSize?: GroupSize;
-//   rating: Rating;
-//   included: string[];
-//   notIncluded: string[];
-//   amenities: string[];
-//   roomTypes: RoomType[];
-//   tripHighlights: TripHighlight[];
-//   itinerary: ItineraryDay[];
-//   addOns: AddOn[];
-//   createdBy?: Creator;
-//   visits: number;
-// };
+import type { Destination, Review } from "@/types/destination";
 
 type DestinationDetailsCardProps = {
   data: Destination;
+  reviews: Review[];
 };
 
 type Tab = "overview" | "itinerary" | "reviews";
 
 const SERVICE_FEE = 0;
 
-const DestinationDetailsCard = ({ data }: DestinationDetailsCardProps) => {
+const DestinationDetailsCard = ({
+  data,
+  reviews,
+}: DestinationDetailsCardProps) => {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+
 
   const standardRoom = data.roomTypes?.[0];
   const pricePerPerson = standardRoom?.price ?? data.price;
@@ -341,7 +316,7 @@ const DestinationDetailsCard = ({ data }: DestinationDetailsCardProps) => {
               <ItineraryTab itinerary={data.itinerary} />
             )}
 
-            {activeTab === "reviews" && <ReviewsTab />}
+            {activeTab === "reviews" && <ReviewsTab reviews={reviews} />}
           </div>
 
           {/* Sidebar — unchanged structurally, now data-driven on price */}
