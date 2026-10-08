@@ -111,9 +111,10 @@ export default function DestinationsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {destinations.map((d) => (
-            <div
+            <Link
               key={d._id}
-              className="bg-white border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-[rgb(13,162,231)]/5 hover:border-[rgb(13,162,231)]/30 transition-all duration-300"
+              href={`/admin/destination/${d._id}`}
+              className="block bg-white border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-[rgb(13,162,231)]/5 hover:border-[rgb(13,162,231)]/30 transition-all duration-300"
             >
               <img
                 src={d.mainImage}
@@ -136,7 +137,7 @@ export default function DestinationsPage() {
                   </span>
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

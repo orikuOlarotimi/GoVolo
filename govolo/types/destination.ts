@@ -40,6 +40,7 @@ export type Destination = {
   addOns: AddOn[];
   createdBy?: Creator;
   visits: number;
+  isPublished: boolean;
 };
 
 export type DestinationDetailsCardProps = {
