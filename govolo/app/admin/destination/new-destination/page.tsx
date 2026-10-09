@@ -5,7 +5,7 @@ import BasicsAndMediaStep from "../../../../components/admin/destinations/basics
 import TripContentStep from "../../../../components/admin/destinations/tripContentStep";
 import ItineraryStep from "../../../../components/admin/destinations/itineraryStep";
 import PricingStep from "../../../../components/admin/destinations/pricingStep";
-import { saveDraft, loadDraft, clearDraft } from "@/lib/draftStorage";
+import { saveDraft, loadDraft, clearDraft, purgeExpiredDrafts } from "@/lib/draftStorage";
 // adjust this import to whatever your actual auth hook is called
 import { useAuth } from "@/context/authContext";
 import { ApiError } from "../../../../utils/apiClient";
@@ -66,18 +66,33 @@ export default function PostDestinationForm() {
   const apiFetch = useApiFetch();
 
   // Load any existing draft once, before rendering the form
-  useEffect(() => {
-    if (authLoading) return; // wait for auth to resolve first
-    if (!user?.email) {
-      setRestoring(false);
-      return;
-    }
-    loadDraft<DestinationFormData>(user.email)
-      .then((draft) => {
-        if (draft) setData(draft);
-      })
-      .finally(() => setRestoring(false));
-  }, [user?.email, authLoading]);
+useEffect(() => {
+  if (authLoading) return;
+  if (!user?.email) {
+    setRestoring(false);
+    return;
+  }
+
+  let cancelled = false;
+  setRestoring(true); // blocks autosave until this user's draft is loaded
+
+  purgeExpiredDrafts()
+    .catch(() => {})
+    .then(() => loadDraft<DestinationFormData>(user.email))
+    .then((draft:any) => {
+      if (!cancelled) {
+        setData(draft ? { ...initialData, ...draft } : initialData);
+      }
+    })
+    .catch(() => {})
+    .finally(() => {
+      if (!cancelled) setRestoring(false);
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [user?.email, authLoading]);
 
   // Autosave on every change, debounced so we're not writing on every keystroke
   useEffect(() => {
@@ -187,6 +202,8 @@ export default function PostDestinationForm() {
       </div>
     );
   }
+  const handleChange = (updated: Partial<DestinationFormData>) =>
+    setData((prev) => ({ ...prev, ...updated }));
 
   return (
     <div className="container max-w-6xl mx-auto">
@@ -230,14 +247,14 @@ export default function PostDestinationForm() {
         {step === 0 && (
           <BasicsAndMediaStep
             data={data}
-            onChange={(updated) => setData({ ...data, ...updated })}
+            onChange={handleChange}
             onNext={goNext}
           />
         )}
         {step === 1 && (
           <TripContentStep
             data={data}
-            onChange={(updated) => setData({ ...data, ...updated })}
+            onChange={handleChange}
             onNext={goNext}
             onBack={goBack}
           />
@@ -245,7 +262,7 @@ export default function PostDestinationForm() {
         {step === 2 && (
           <ItineraryStep
             data={data}
-            onChange={(updated) => setData({ ...data, ...updated })}
+            onChange={handleChange}
             onNext={goNext}
             onBack={goBack}
           />
@@ -253,7 +270,7 @@ export default function PostDestinationForm() {
         {step === 3 && (
           <PricingStep
             data={data}
-            onChange={(updated) => setData({ ...data, ...updated })}
+            onChange={handleChange}
             onSubmit={handleSubmit}
             onBack={goBack}
             submitting={submitting}
