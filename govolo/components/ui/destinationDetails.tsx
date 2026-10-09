@@ -2,41 +2,28 @@
 
 import { useState } from "react";
 import DestinationDetailsCard from "@/components/ui/destinationDetailsCard";
-  
-type Rating = { average: number; count: number };
-
-type Creator = {
-  _id: string;
-  name?: string;
-  email?: string;
-};
-
-type Destination = {
-  _id: string;
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  mainImage: string;
-  images?: string[];
-  visits?: number;
-  rating: Rating;
-  createdBy?: Creator;
-};
+import type { Destination, Review } from "@/types/destination";
+ 
 
 type DestinationApiResponse = {
   success: boolean;
+  reviews?: Review[];
   destination?: Destination;
 };
 
 type DestinationDetailsProps = {
   id: string;
   initialData: DestinationApiResponse;
+  isPreview?: boolean;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
+const DestinationDetails = ({
+  id,
+  initialData,
+  isPreview = false,
+}: DestinationDetailsProps) => {
   const [data, setData] = useState<DestinationApiResponse>(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(!initialData?.success);
@@ -63,7 +50,6 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
       setLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-32 bg-gray-100">
@@ -87,7 +73,6 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
   }
 
   const destination = data.destination;
-  console.log(destination)
   const gallery = [destination.mainImage, ...(destination.images ?? [])];
 
   const goPrev = () =>
@@ -183,9 +168,19 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
 
         <div className="absolute bottom-8 left-8">
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full">
-              Trending
-            </span>
+            {isPreview ? (
+              <span
+                className={`inline-flex items-center gap-1 text-white text-[11px] font-bold px-3 py-1 rounded-full ${
+                  destination.isPublished ? "bg-emerald-500" : "bg-amber-500"
+                }`}
+              >
+                {destination.isPublished ? "Published" : "Draft"}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 bg-gradient-to-r from-orange-400 to-rose-500 text-white text-[11px] font-bold px-3 py-1 rounded-full">
+                Trending
+              </span>
+            )}
             <span className="bg-black/30 backdrop-blur-sm border border-white/20 text-white text-[11px] px-3 py-1 rounded-full">
               {destination.visits ?? 0}+ Tours
             </span>
@@ -194,26 +189,28 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
             {destination.title}
           </h1>
           <div className="flex items-center gap-4 mt-2">
-            <div className="flex items-center gap-1">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-star h-4 w-4 text-amber-400 fill-amber-400"
-              >
-                <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
-              </svg>
-              <span className="text-white/80 text-sm ml-1">
-                {destination.rating?.average?.toFixed(1) ?? "0.0"} (
-                {destination.rating?.count ?? 0} reviews)
-              </span>
-            </div>
+            {!isPreview && (
+              <div className="flex items-center gap-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-star h-4 w-4 text-amber-400 fill-amber-400"
+                >
+                  <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"></path>
+                </svg>
+                <span className="text-white/80 text-sm ml-1">
+                  {destination.rating?.average?.toFixed(1) ?? "0.0"} (
+                  {destination.rating?.count ?? 0} reviews)
+                </span>
+              </div>
+            )}
             <div className="flex items-center gap-1 text-white/80 text-sm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -237,8 +234,9 @@ const DestinationDetails = ({ id, initialData }: DestinationDetailsProps) => {
       </div>
 
       <DestinationDetailsCard
-        rating={destination.rating}
-        description={destination.description}
+        data={destination}
+        reviews={initialData.reviews ?? []}
+        isPreview={isPreview}
       />
     </div>
   );

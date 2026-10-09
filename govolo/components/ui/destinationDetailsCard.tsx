@@ -1,50 +1,70 @@
-import React from "react";
+"use client";
 
-type Rating = {
-  average: number;
-  count: number;
-};
+import { useState } from "react";
+import ItineraryTab from "../../components/ui/ItineraryTab";
+import ReviewsTab from "../../components/ui/ReviewsTab";
+import type { Destination, Review } from "@/types/destination";
 
 type DestinationDetailsCardProps = {
-  rating: Rating;
-  description: string;
+  data: Destination;
+  reviews: Review[];
+  isPreview?: boolean;
 };
 
+type Tab = "overview" | "itinerary" | "reviews";
+
+const SERVICE_FEE = 0;
+
 const DestinationDetailsCard = ({
-  rating,
-  description,
+  data,
+  reviews,
+  isPreview = false,
 }: DestinationDetailsCardProps) => {
+  const [activeTab, setActiveTab] = useState<Tab>("overview");
+
+  const standardRoom = data.roomTypes?.[0];
+  const pricePerPerson = standardRoom?.price ?? data.price;
+  const total = pricePerPerson * 2 + SERVICE_FEE; // matches the existing "2 people" static default below
+
   return (
     <div>
       <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 space-y-10">
-            <div className="grid grid-cols-3 gap-4 opacity-100 transform-none">
-              <div className="bg-[rgb(242,245,247)]/50 border border-border rounded-2xl p-4 text-center">
-                <div className="w-9 h-9 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center mx-auto mb-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-clock h-4 w-4 text-[rgb(14,168,230)]"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
+          <div
+            className={`space-y-10 ${isPreview ? "lg:col-span-3" : "lg:col-span-2"}`}
+          >
+            {/* Stat cards */}
+
+            <div
+              className={`grid gap-4 ${isPreview ? "grid-cols-2" : "grid-cols-3"}`}
+            >
+              {!isPreview && (
+                <div className="bg-[rgb(242,245,247)]/50 border border-border rounded-2xl p-4 text-center">
+                  <div className="w-9 h-9 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center mx-auto mb-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-clock h-4 w-4 text-[rgb(14,168,230)]"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <p className="text-xs text-[rgb(99,111,129)] mb-0.5">
+                    Duration
+                  </p>
+                  <p className="text-sm font-bold text-[rgb(15,23,41)]">
+                    {data.duration || "Not specified"}
+                  </p>
                 </div>
-                <p className="text-xs text-[rgb(99,111,129)] mb-0.5">
-                  Duration
-                </p>
-                <p className="text-sm font-bold text-[rgb(15,23,41)]">
-                  5 Days / 4 Nights
-                </p>
-              </div>
+              )}
               <div className="bg-[rgb(242,245,247)]/50 border border-border rounded-2xl p-4 text-center">
                 <div className="w-9 h-9 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center mx-auto mb-2">
                   <svg
@@ -69,7 +89,9 @@ const DestinationDetailsCard = ({
                   Group Size
                 </p>
                 <p className="text-sm font-bold text-[rgb(15,23,41)]">
-                  2 – 12 People
+                  {data.groupSize
+                    ? `${data.groupSize.min} – ${data.groupSize.max} People`
+                    : "Not specified"}
                 </p>
               </div>
               <div className="bg-[rgb(242,245,247)]/50 border border-border rounded-2xl p-4 text-center">
@@ -91,160 +113,107 @@ const DestinationDetailsCard = ({
                 </div>
                 <p className="text-xs text-[rgb(99,111,129)] mb-0.5">Rating</p>
                 <p className="text-sm font-bold text-[rgb(15,23,41)]">
-                  {rating.average} / 5.0
+                  {data.rating.average} / 5.0
                 </p>
               </div>
             </div>
-            <div className="opacity-100 transform-none">
-              <div className="flex gap-1 border-b border-border">
-                <button className="px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px border-[rgb(14,168,230)] text-[rgb(14,168,230)]">
-                  overview
-                </button>
-                <button className="px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px border-transparent text-[rgb(99,111,129)] hover:text-[rgb(15,23,41)]">
-                  itinerary
-                </button>
-                <button className="px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px border-transparent text-[rgb(99,111,129)] hover:text-[rgb(15,23,41)]">
+
+            {/* Tabs */}
+            <div className="flex gap-1 border-b border-border">
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px ${
+                  activeTab === "overview"
+                    ? "border-[rgb(14,168,230)] text-[rgb(14,168,230)]"
+                    : "border-transparent text-[rgb(99,111,129)] hover:text-[rgb(15,23,41)]"
+                }`}
+              >
+                overview
+              </button>
+              <button
+                onClick={() => setActiveTab("itinerary")}
+                className={`px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px ${
+                  activeTab === "itinerary"
+                    ? "border-[rgb(14,168,230)] text-[rgb(14,168,230)]"
+                    : "border-transparent text-[rgb(99,111,129)] hover:text-[rgb(15,23,41)]"
+                }`}
+              >
+                itinerary
+              </button>
+              {!isPreview && (
+                <button
+                  onClick={() => setActiveTab("reviews")}
+                  className={`px-5 py-2.5 text-sm font-semibold capitalize transition-all border-b-2 -mb-px ${
+                    activeTab === "reviews"
+                      ? "border-[rgb(14,168,230)] text-[rgb(14,168,230)]"
+                      : "border-transparent text-[rgb(99,111,129)] hover:text-[rgb(15,23,41)]"
+                  }`}
+                >
                   reviews
                 </button>
-              </div>
+              )}
             </div>
-            <div className="space-y-8">
-              <div className="opacity-100 transform-none">
+
+            {/* Tab content */}
+            {activeTab === "overview" && (
+              <div className="space-y-8">
+                {/* About This Trip */}
                 <div>
                   <h2 className="font-heading font-bold text-xl text-[rgb(15,23,41)] mb-3">
                     About This Trip
                   </h2>
-                  <p className="text-[rgb(99,111,129)] leading-relaxed">
-                   {description}
-                  </p>
-                  <p className="text-[rgb(99,111,129)] leading-relaxed mt-3">
-                    Stay in a 5-star beachfront villa in Seminyak, explore the
-                    cultural heart of Ubud, take a boat to Nusa Penida for
-                    world-class snorkeling, and end with a rejuvenating Balinese
-                    spa session. This is Bali at its finest.
+                  <p className="text-[rgb(99,111,129)] leading-relaxed whitespace-pre-line">
+                    {data.description}
                   </p>
                 </div>
-              </div>
-              <div className="opacity-100 transform-none">
+
+                {/* Trip Highlights */}
                 <div>
                   <h2 className="font-heading font-bold text-xl text-[rgb(15,23,41)] mb-4">
                     Trip Highlights
                   </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="group flex items-start gap-3 border border-border rounded-2xl p-4 hover:border-[rgb(14,168,230)]/30 hover:shadow-md transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center shrink-0 group-hover:bg-[rgb(14,168,230)] transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-mountain h-5 w-5 text-[rgb(14,168,230)] group-hover:text-[rgb(255,255,255)] transition-colors"
+                  {data.tripHighlights.length === 0 ? (
+                    <p className="text-left text-sm text-[rgb(99,111,129)] py-6">
+                      Trip highlights unavailable for this trip.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      {data.tripHighlights.map((h, i) => (
+                        <div
+                          key={i}
+                          className="group flex items-start gap-3 border border-border rounded-2xl p-4 hover:border-[rgb(14,168,230)]/30 hover:shadow-md transition-all"
                         >
-                          <path d="m8 3 4 8 5-5 5 15H2L8 3z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-[rgb(15,23,41)]">
-                          Sacred Temples
-                        </p>
-                        <p className="text-xs text-[rgb(99,111,129)] mt-0.5">
-                          Visit Tanah Lot &amp; Uluwatu
-                        </p>
-                      </div>
+                          <div className="w-10 h-10 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center shrink-0 group-hover:bg-[rgb(14,168,230)] transition-colors">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="lucide lucide-sparkles h-5 w-5 text-[rgb(14,168,230)] group-hover:text-white transition-colors"
+                            >
+                              <path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm text-[rgb(15,23,41)]">
+                              {h.title}
+                            </p>
+                            <p className="text-xs text-[rgb(99,111,129)] mt-0.5">
+                              {h.description}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="group flex items-start gap-3 border border-border rounded-2xl p-4 hover:border-[rgb(14,168,230)]/30 hover:shadow-md transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center shrink-0 group-hover:bg-[rgb(14,168,230)] transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-waves h-5 w-5 text-[rgb(14,168,230)] group-hover:text-[rgb(255,255,255)] transition-colors"
-                        >
-                          <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-                          <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-                          <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-[rgb(15,23,41)]">
-                          Beach Bliss
-                        </p>
-                        <p className="text-xs text-[rgb(99,111,129)] mt-0.5">
-                          Seminyak &amp; Nusa Dua shores
-                        </p>
-                      </div>
-                    </div>
-                    <div className="group flex items-start gap-3 border border-border rounded-2xl p-4 hover:border-[rgb(14,168,230)]/30 hover:shadow-md transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center shrink-0 group-hover:bg-[rgb(14,168,230)] transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-camera h-5 w-5 text-[rgb(14,168,230)] group-hover:text-[rgb(255,255,255)] transition-colors"
-                        >
-                          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-                          <circle cx="12" cy="13" r="3"></circle>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-[rgb(15,23,41)]">
-                          Rice Terraces
-                        </p>
-                        <p className="text-xs text-[rgb(99,111,129)] mt-0.5">
-                          Iconic Tegallalang views
-                        </p>
-                      </div>
-                    </div>
-                    <div className="group flex items-start gap-3 border border-border rounded-2xl p-4 hover:border-[rgb(14,168,230)]/30 hover:shadow-md transition-all">
-                      <div className="w-10 h-10 rounded-xl bg-[rgb(14,168,230)]/10 flex items-center justify-center shrink-0 group-hover:bg-[rgb(14,168,230)] transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-coffee h-5 w-5 text-[rgb(14,168,230)] group-hover:text-[rgb(255,255,255)] transition-colors"
-                        >
-                          <path d="M10 2v2"></path>
-                          <path d="M14 2v2"></path>
-                          <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"></path>
-                          <path d="M6 2v2"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm text-[rgb(15,23,41)]">
-                          Local Cuisine
-                        </p>
-                        <p className="text-xs text-[rgb(99,111,129)] mt-0.5">
-                          Authentic Balinese food
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </div>
-              <div className="opacity-100 transform-none">
+
+                {/* Included / Not Included */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
                     <h3 className="font-heading font-bold text-base text-[rgb(15,23,41)] mb-3 flex items-center gap-2">
@@ -266,144 +235,36 @@ const DestinationDetailsCard = ({
                       </span>
                       What's Included
                     </h3>
-                    <ul className="space-y-2">
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        5-star beachfront resort accommodation
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Daily breakfast &amp; 3 curated dinners
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Airport pickup &amp; drop-off
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Private guided temple tour
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Tegallalang rice terrace visit
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Traditional Balinese spa session
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        Snorkeling trip to Nusa Penida
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
-                        >
-                          <path d="M20 6 9 17l-5-5"></path>
-                        </svg>{" "}
-                        24/7 personal travel concierge
-                      </li>
-                    </ul>
+                    {data.included.length === 0 ? (
+                      <p className="text-left text-sm text-[rgb(99,111,129)] py-4">
+                        No included items listed for this trip.
+                      </p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {data.included.map((item, i) => (
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-[rgb(15,23,41)]"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="lucide lucide-check h-4 w-4 text-emerald-500 shrink-0 mt-0.5"
+                            >
+                              <path d="M20 6 9 17l-5-5"></path>
+                            </svg>{" "}
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   <div>
                     <h3 className="font-heading font-bold text-base text-[rgb(15,23,41)] mb-3 flex items-center gap-2">
@@ -414,132 +275,72 @@ const DestinationDetailsCard = ({
                       </span>
                       Not Included
                     </h3>
-                    <ul className="space-y-2">
-                      <li className="flex items-start gap-2 text-sm text-[rgb(99,111,129)]">
-                        <span className="text-rose-400 shrink-0 mt-0.5 text-xs font-bold">
-                          ✕
-                        </span>{" "}
-                        International flights
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(99,111,129)]">
-                        <span className="text-rose-400 shrink-0 mt-0.5 text-xs font-bold">
-                          ✕
-                        </span>{" "}
-                        Personal shopping &amp; souvenirs
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(99,111,129)]">
-                        <span className="text-rose-400 shrink-0 mt-0.5 text-xs font-bold">
-                          ✕
-                        </span>{" "}
-                        Alcoholic beverages
-                      </li>
-                      <li className="flex items-start gap-2 text-sm text-[rgb(99,111,129)]">
-                        <span className="text-rose-400 shrink-0 mt-0.5 text-xs font-bold">
-                          ✕
-                        </span>{" "}
-                        Travel insurance
-                      </li>
-                    </ul>
+                    {data.notIncluded.length === 0 ? (
+                      <p className="text-left text-sm text-[rgb(99,111,129)] py-4">
+                        No excluded items listed for this trip.
+                      </p>
+                    ) : (
+                      <ul className="space-y-2">
+                        {data.notIncluded.map((item, i) => (
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-[rgb(99,111,129)]"
+                          >
+                            <span className="text-rose-400 shrink-0 mt-0.5 text-xs font-bold">
+                              ✕
+                            </span>{" "}
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
-              </div>
-              <div className="opacity-100 transform-none">
+
+                {/* Amenities */}
                 <div>
                   <h2 className="font-heading font-bold text-xl text-[rgb(15,23,41)] mb-4">
                     Amenities
                   </h2>
-                  <div className="flex flex-wrap gap-3">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(242,245,247)] border border-border text-sm text-[rgb(15,23,41)]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-wifi h-4 w-4 text-[rgb(14,168,230)]"
-                      >
-                        <path d="M12 20h.01"></path>
-                        <path d="M2 8.82a15 15 0 0 1 20 0"></path>
-                        <path d="M5 12.859a10 10 0 0 1 14 0"></path>
-                        <path d="M8.5 16.429a5 5 0 0 1 7 0"></path>
-                      </svg>{" "}
-                      Free WiFi
+                  {data.amenities.length === 0 ? (
+                    <p className="text-center text-sm text-[rgb(99,111,129)] py-6">
+                      Amenities unavailable for this trip.
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      {data.amenities.map((amenity, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(242,245,247)] border border-border text-sm text-[rgb(15,23,41)]"
+                        >
+                          {amenity}
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(242,245,247)] border border-border text-sm text-[rgb(15,23,41)]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-car h-4 w-4 text-[rgb(14,168,230)]"
-                      >
-                        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"></path>
-                        <circle cx="7" cy="17" r="2"></circle>
-                        <path d="M9 17h6"></path>
-                        <circle cx="17" cy="17" r="2"></circle>
-                      </svg>{" "}
-                      Airport Transfer
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(242,245,247)] border border-border text-sm text-[rgb(15,23,41)]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-coffee h-4 w-4 text-[rgb(14,168,230)]"
-                      >
-                        <path d="M10 2v2"></path>
-                        <path d="M14 2v2"></path>
-                        <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"></path>
-                        <path d="M6 2v2"></path>
-                      </svg>{" "}
-                      Breakfast
-                    </div>
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgb(242,245,247)] border border-border text-sm text-[rgb(15,23,41)]">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-shield h-4 w-4 text-[rgb(14,168,230)]"
-                      >
-                        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
-                      </svg>{" "}
-                      Travel Insurance
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === "itinerary" && (
+              <ItineraryTab itinerary={data.itinerary} />
+            )}
+
+            {!isPreview && activeTab === "reviews" && (
+              <ReviewsTab reviews={reviews} rating={data.rating} />
+            )}
           </div>
-          <div className="lg:col-span-1">
-            <div className="sticky top-20 space-y-4">
-              <div className="opacity-100 transform-none">
+
+          {/* Sidebar — unchanged structurally, now data-driven on price */}
+          {!isPreview && (
+            <div className="lg:col-span-1">
+              <div className="sticky top-20 space-y-4">
                 <div className="bg-[rgb(248,250,252)] border border-border rounded-3xl p-6 shadow-xl shadow-[rgb(14,168,230)]/5 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-br from-[rgb(14,168,230)]/5 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
                   <div className="relative z-10">
                     <div className="flex items-end gap-1 mb-1">
                       <span className="text-3xl font-bold text-[rgb(14,168,230)]">
-                        $499
+                        ${pricePerPerson}
                       </span>
                       <span className="text-[rgb(99,111,129)] text-sm mb-1">
                         / person
@@ -626,10 +427,10 @@ const DestinationDetailsCard = ({
                     <div className="bg-[rgb(242,245,247)]/50 rounded-xl p-4 mb-4 space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-[rgb(99,111,129)]">
-                          $499 × 2 people
+                          ${pricePerPerson} × 2 people
                         </span>
                         <span className="font-medium text-[rgb(15,23,41)]">
-                          $998
+                          ${pricePerPerson * 2}
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
@@ -637,13 +438,13 @@ const DestinationDetailsCard = ({
                           Service fee
                         </span>
                         <span className="font-medium text-[rgb(15,23,41)]">
-                          $50
+                          ${SERVICE_FEE}
                         </span>
                       </div>
                       <div className="h-px bg-[rgb(225,231,239)]"></div>
                       <div className="flex justify-between font-bold">
                         <span className="text-[rgb(15,23,41)]">Total</span>
-                        <span className="text-[rgb(14,168,230)]">$1,048</span>
+                        <span className="text-[rgb(14,168,230)]">${total}</span>
                       </div>
                     </div>
                     <a
@@ -672,8 +473,7 @@ const DestinationDetailsCard = ({
                     </p>
                   </div>
                 </div>
-              </div>
-              <div className="opacity-100 transform-none">
+
                 <div className="bg-[rgb(248,250,252)] border border-border rounded-2xl p-5">
                   <p className="font-semibold text-sm text-[rgb(15,23,41)] mb-3">
                     Need help planning?
@@ -702,7 +502,7 @@ const DestinationDetailsCard = ({
                       +1 (555) 123-4567
                     </a>
                     <a
-                      href="mailto:hello@travelix.com"
+                      href="mailto:hello@govolo.com"
                       className="flex items-center gap-3 text-sm text-[rgb(99,111,129)] hover:text-[rgb(14,168,230)] transition-colors"
                     >
                       <div className="w-8 h-8 rounded-lg bg-[rgb(14,168,230)]/10 flex items-center justify-center">
@@ -732,8 +532,7 @@ const DestinationDetailsCard = ({
                     </a>
                   </div>
                 </div>
-              </div>
-              <div className="opacity-100 transform-none">
+
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-[rgb(242,245,247)]/50 border border-border rounded-xl p-3 text-center">
                     <p className="text-xs font-bold text-[rgb(14,168,230)]">
@@ -760,7 +559,7 @@ const DestinationDetailsCard = ({
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

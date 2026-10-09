@@ -55,7 +55,6 @@ function buildUrl(path: string, params?: ApiFetchOptions["params"]) {
   return url.toString();
 }
 
-// Single attempt, aborted after timeoutMs. Rejects on timeout or network failure.
 async function attemptFetch(
   url: string,
   init: RequestInit,
@@ -74,8 +73,6 @@ async function attemptFetch(
   }
 }
 
-// Retries once on timeout/network failure. The first attempt's promise is simply
-// discarded on rejection — nothing from it is ever read or applied.
 async function fetchWithRetry(
   url: string,
   init: RequestInit,
@@ -92,7 +89,7 @@ async function fetchWithRetry(
   }
 }
 
-export async function apiFetch<T = unknown>(
+export async function   apiFetch<T = unknown>(
   path: string,
   options: ApiFetchOptions,
   auth: AuthHooks,
@@ -109,21 +106,30 @@ export async function apiFetch<T = unknown>(
 
   const buildInit = (token?: string | null): RequestInit => {
     const headers: Record<string, string> = {};
-    if (body !== undefined) headers["Content-Type"] = "application/json";
+    const isFormData =
+      typeof FormData !== "undefined" && body instanceof FormData;
+
+    if (body !== undefined && !isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
     if (requiresAuth && token) headers["Authorization"] = `Bearer ${token}`;
 
     return {
       method,
       headers,
       credentials: "include",
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
     };
   };
 
   const currentToken = requiresAuth ? auth.getAccessToken() : null;
   let res = await fetchWithRetry(url, buildInit(currentToken), timeoutMs);
 
-  // Access token missing/expired/invalid — attempt one silent refresh, then retry once.
   if (requiresAuth && res.status === 401) {
     const newToken = await auth.refreshAccessToken();
 
@@ -135,7 +141,6 @@ export async function apiFetch<T = unknown>(
     res = await fetchWithRetry(url, buildInit(newToken), timeoutMs);
 
     if (res.status === 401) {
-      // Fresh token still rejected — genuinely invalid session, not just a stale token.
       auth.onSessionExpired();
       throw new SessionExpiredError();
     }
