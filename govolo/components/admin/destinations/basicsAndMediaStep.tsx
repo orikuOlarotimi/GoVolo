@@ -1,3 +1,4 @@
+// basicsAndMediaStep.tsx
 "use client";
 
 import { useState } from "react";
@@ -16,12 +17,15 @@ type BasicsAndMediaData = {
   groupSizeMax: string;
   mainImage: File | null;
   images: File[];
+  existingMainImage?: string | null;
+  existingImages?: string[];
 };
 
 type BasicsAndMediaStepProps = {
   data: BasicsAndMediaData;
   onChange: (data: BasicsAndMediaData) => void;
   onNext: () => void;
+  mediaLocked?: boolean;
 };
 
 function getExtension(filename: string) {
@@ -32,14 +36,20 @@ export default function BasicsAndMediaStep({
   data,
   onChange,
   onNext,
+  mediaLocked = false,
 }: BasicsAndMediaStepProps) {
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(
-    data.mainImage ? URL.createObjectURL(data.mainImage) : null,
+    data.mainImage
+      ? URL.createObjectURL(data.mainImage)
+      : (data.existingMainImage ?? null),
   );
-  const [galleryPreviews, setGalleryPreviews] = useState<string[]>(
-    data.images.map((file) => URL.createObjectURL(file)),
-  );
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([
+    ...(data.existingImages ?? []),
+    ...data.images.map((file) => URL.createObjectURL(file)),
+  ]);
   const [error, setError] = useState<string | null>(null);
+
+  const galleryCount = galleryPreviews.length;
 
   const handleMainImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -119,7 +129,7 @@ export default function BasicsAndMediaStep({
     data.description.trim() &&
     data.location.trim() &&
     data.price.trim() &&
-    data.mainImage;
+    (data.mainImage || data.existingMainImage);
 
   return (
     <div className="space-y-8">
@@ -227,6 +237,11 @@ export default function BasicsAndMediaStep({
         <label className="text-sm font-medium text-[rgb(15,23,42)]">
           Main Image
         </label>
+        {mediaLocked && (
+          <p className="text-xs text-[rgb(101,117,139)]">
+            Image editing isn&apos;t available yet.
+          </p>
+        )}
         {mainImagePreview ? (
           <div className="relative w-48 h-32 rounded-xl overflow-hidden border border-border">
             <img
@@ -234,31 +249,40 @@ export default function BasicsAndMediaStep({
               alt="Main"
               className="w-full h-full object-cover"
             />
-            <button
-              onClick={removeMainImage}
-              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
+            {!mediaLocked && (
+              <button
+                onClick={removeMainImage}
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         ) : (
-          <label className="w-48 h-32 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-sm text-[rgb(101,117,139)] cursor-pointer hover:border-[rgb(13,162,231)]">
-            Upload main image
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleMainImageSelect}
-              className="hidden"
-            />
-          </label>
+          !mediaLocked && (
+            <label className="w-48 h-32 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-sm text-[rgb(101,117,139)] cursor-pointer hover:border-[rgb(13,162,231)]">
+              Upload main image
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleMainImageSelect}
+                className="hidden"
+              />
+            </label>
+          )
         )}
       </div>
 
       <div className="flex flex-col gap-3">
         <label className="text-sm font-medium text-[rgb(15,23,42)]">
-          Gallery Images ({data.images.length}/{MAX_GALLERY_IMAGES})
+          Gallery Images ({galleryCount}/{MAX_GALLERY_IMAGES})
         </label>
+        {mediaLocked && (
+          <p className="text-xs text-[rgb(101,117,139)]">
+            Image editing isn&apos;t available yet.
+          </p>
+        )}
         <div className="flex flex-wrap gap-4">
           {galleryPreviews.map((src, i) => (
             <div
@@ -270,15 +294,17 @@ export default function BasicsAndMediaStep({
                 alt={`Gallery ${i}`}
                 className="w-full h-full object-cover"
               />
-              <button
-                onClick={() => removeGalleryImage(i)}
-                className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
-              >
-                <X className="h-3 w-3" />
-              </button>
+              {!mediaLocked && (
+                <button
+                  onClick={() => removeGalleryImage(i)}
+                  className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
             </div>
           ))}
-          {data.images.length < MAX_GALLERY_IMAGES && (
+          {!mediaLocked && galleryCount < MAX_GALLERY_IMAGES && (
             <label className="w-32 h-24 rounded-xl border-2 border-dashed border-border flex items-center justify-center text-xs text-[rgb(101,117,139)] cursor-pointer hover:border-[rgb(13,162,231)] text-center px-2">
               Add images
               <input

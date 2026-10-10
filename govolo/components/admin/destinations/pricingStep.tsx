@@ -26,6 +26,7 @@ type PricingStepProps = {
   onSubmit: () => void;
   onBack: () => void;
   submitting?: boolean;
+  submitLabel?: string;
 };
 
 export default function PricingStep({
@@ -34,6 +35,7 @@ export default function PricingStep({
   onSubmit,
   onBack,
   submitting,
+  submitLabel = "Submit Destination",
 }: PricingStepProps) {
   // --- Extra room types (beyond Standard Room at index 0) ---
   const addRoomType = () => {
@@ -89,7 +91,6 @@ export default function PricingStep({
     data.addOns.every((a) => a.name.trim() && a.price.trim());
 
   return (
-    
     <div className="space-y-10">
       <h2 className="text-xl font-bold text-[rgb(15,23,42)]">Pricing</h2>
 
@@ -222,7 +223,7 @@ export default function PricingStep({
           disabled={!canSubmit || submitting}
           className="px-8 py-3 rounded-xl bg-[rgb(13,162,231)] text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[rgb(13,162,231)]/90 transition-all"
         >
-          {submitting ? "Submitting..." : "Submit Destination"}
+          {submitting ? "Submitting..." : submitLabel}
         </button>
       </div>
     </div>
