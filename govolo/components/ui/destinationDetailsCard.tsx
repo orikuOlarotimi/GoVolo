@@ -449,7 +449,7 @@ const DestinationDetailsCard = ({
                     </div>
                     <a
                       href="/BookTripPage"
-                      className="btn-gradient w-full flex items-center justify-center gap-2 group mb-3"
+                      className="bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] w-full flex items-center justify-center gap-2 group mb-3 px-6 py-3 font-semibold transition-all duration-300 ease-in-out text-white  hover:scale-105 rounded-[10px] "
                     >
                       Book This Trip
                       <svg
