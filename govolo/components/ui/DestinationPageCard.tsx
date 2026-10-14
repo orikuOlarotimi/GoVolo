@@ -43,7 +43,7 @@ export default function DestinationPageCard({
           <img
             src={mainImage}
             alt={title}
-            className="w-full object-cover max-h-[440px] transition-transform duration-300 group-hover:scale-110 inset-0"
+            className="w-full object-cover h-[300px] sm:h-[360px] md:h-[400px] lg:h-[440px] transition-transform duration-300 group-hover:scale-110 inset-0"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
           <div className="absolute top-4 left-4">

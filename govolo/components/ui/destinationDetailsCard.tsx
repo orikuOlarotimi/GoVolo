@@ -343,14 +343,14 @@ const DestinationDetailsCard = ({
                         ${pricePerPerson}
                       </span>
                       <span className="text-[rgb(99,111,129)] text-sm mb-1">
-                        / person
+                        / night for standard a room 
                       </span>
                     </div>
                     <p className="text-xs text-[rgb(99,111,129)] mb-5">
                       All taxes &amp; fees included
                     </p>
                     <div className="space-y-3 mb-4">
-                      <div className="flex items-center gap-3 border border-border rounded-xl px-4 py-3 hover:border-[rgb(14,168,230)]/40 transition-colors cursor-pointer">
+                      {/* <div className="flex items-center gap-3 border border-border rounded-xl px-4 py-3 hover:border-[rgb(14,168,230)]/40 transition-colors cursor-pointer">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="24"
@@ -382,8 +382,11 @@ const DestinationDetailsCard = ({
                             Select a date
                           </p>
                         </div>
-                      </div>
-                      <div className="flex items-center justify-between border border-border rounded-xl px-4 py-3">
+                      </div> */}
+
+
+
+                      {/* <div className="flex items-center justify-between border border-border rounded-xl px-4 py-3">
                         <div className="flex items-center gap-2">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -422,9 +425,9 @@ const DestinationDetailsCard = ({
                             +
                           </button>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
-                    <div className="bg-[rgb(242,245,247)]/50 rounded-xl p-4 mb-4 space-y-2">
+                    {/* <div className="bg-[rgb(242,245,247)]/50 rounded-xl p-4 mb-4 space-y-2">
                       <div className="flex justify-between text-sm">
                         <span className="text-[rgb(99,111,129)]">
                           ${pricePerPerson} × 2 people
@@ -446,7 +449,7 @@ const DestinationDetailsCard = ({
                         <span className="text-[rgb(15,23,41)]">Total</span>
                         <span className="text-[rgb(14,168,230)]">${total}</span>
                       </div>
-                    </div>
+                    </div> */}
                     <a
                       href="/BookTripPage"
                       className="bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] w-full flex items-center justify-center gap-2 group mb-3 px-6 py-3 font-semibold transition-all duration-300 ease-in-out text-white  hover:scale-105 rounded-[10px] "
