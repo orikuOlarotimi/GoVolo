@@ -8,6 +8,8 @@ import { useAuth } from "@/context/authContext";
 import { useApiFetch } from "../../../../utils/useApiFetch";
 import DestinationDetails from "@/components/ui/destinationDetails";
 import type { Destination } from "@/types/destination";
+import { toast } from "sonner";
+
 
 export default function AdminDestinationPreviewPage() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +26,7 @@ export default function AdminDestinationPreviewPage() {
     try {
       const res = await apiFetch<{
         success: boolean;
+        message?: string;
         destination?: Destination;
       }>(`/api/destinations/mine/${id}`, {
         method: "GET",
@@ -31,12 +34,18 @@ export default function AdminDestinationPreviewPage() {
         timeoutMs: 12000,
       });
 
-      if (!res.success || !res.destination) {
-        throw new Error("Unsuccessful response");
-      }
+        if (!res.success || !res.destination) {
+          toast.error(res.message || "Destination could not be loaded");
+          return;
+        }
 
       setDestination(res.destination);
-    } catch {
+    } catch (err){
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong while loading this destination",
+      );
       setError(true);
     } finally {
       setLoading(false);
