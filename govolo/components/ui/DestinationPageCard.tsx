@@ -386,20 +386,99 @@ function BookingFlow({ destination }: { destination: Destination }) {
           </div>
 
           {step === 2 ? (
-            <div className="border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] rounded-2xl p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[rgb(15,23,41)]">
-                Guest Details
-              </h2>
-              <p className="text-sm text-[rgb(99,111,129)]">
-                Your selection is saved. The guest details form comes next.
-              </p>
-              <button
-                type="button"
-                onClick={() => setConfirmed(null)}
-                className="px-6 py-2.5 rounded-xl border border-[rgb(225,231,239)] text-sm font-semibold text-[rgb(15,23,41)] hover:bg-[rgb(242,245,247)] transition-all"
-              >
-                Back
-              </button>
+            <div className="lg:col-span-2 space-y-8">
+              <form>
+                <div className="space-y-6">
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="John Doe"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="john@example.com"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="+1 234 567 8900"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Special Requests (Optional)
+                      </label>
+                      <textarea
+                        rows={3}
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none resize-none"
+                        placeholder="Dietary restrictions, room preferences, etc."
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        className="flex-1 py-3 rounded-xl border border-[rgb(225,231,239)] text-[rgb(15,23,41)] font-semibold hover:bg-[rgb(242,245,247)] transition-colors"
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1  cursor-pointer bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] px-6 rounded-xl py-3 rounded-xl flex items-center justify-center gap-2 group"
+                      >
+                        Confirm Booking{" "}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="lucide lucide-credit-card h-4 w-4 group-hover:translate-x-0.5 transition-transform"
+                        >
+                          <rect
+                            width="20"
+                            height="14"
+                            x="2"
+                            y="5"
+                            rx="2"
+                          ></rect>
+                          <line x1="2" x2="22" y1="10" y2="10"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           ) : (
             <form noValidate onSubmit={handleSubmit}>
@@ -724,7 +803,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
 
         {/* Summary column */}
         <div className="lg:col-span-1">
-          <div className="sticky top-20 overflow-hidden bg-[rgb(248,250,252)] border border-[rgb(225,231,239)] rounded-3xl p-6 shadow-xl shadow-[rgb(14,168,230)]/5">
+          <div className=" overflow-hidden bg-[rgb(248,250,252)] border border-[rgb(225,231,239)] rounded-3xl p-6 shadow-xl shadow-[rgb(14,168,230)]/5">
             {recalculating && (
               <LoadingBar
                 key={recalcTick}
