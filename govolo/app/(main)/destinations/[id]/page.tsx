@@ -11,10 +11,10 @@
       const res = await fetch(`${API_URL}/api/destinations/${id}`, {
         cache: "no-store",
       });
-      if (!res.ok) return { success: false };
+      if (!res.ok) return { success: false, message: "something went wrong please try again" };
       return await res.json();
     } catch {
-      return { success: false };
+      return { success: false, message: "something went wrong please try again" };
     }
   }
 

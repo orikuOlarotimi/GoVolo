@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -75,22 +76,18 @@ const money = (n: number) =>
 const plural = (n: number, one: string, many: string) =>
   `${n} ${n === 1 ? one : many}`;
 
-// ---------- fetch wrapper ----------
-
-type BookingDetailsProps = {
-  id: string;
-  initialData: DestinationApiResponse;
-};
+// ---------- fetch wrapper (default export) ----------
 
 export default function BookingDetails({
-  id,
   initialData,
-}: BookingDetailsProps) {
+}: {
+  initialData: DestinationApiResponse;
+}) {
+  const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<DestinationApiResponse>(initialData);
   const [loading, setLoading] = useState(false);
 
   const retry = async () => {
-    if (!id) return;
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/destinations/${id}`, {
@@ -121,29 +118,25 @@ export default function BookingDetails({
     );
   }
 
-  if (!id || !data.success || !data.destination) {
+  if (!data.success || !data.destination) {
     return (
       <div className={CONTAINER}>
         <div className="flex flex-col items-center justify-center gap-4 py-24 bg-gray-100 rounded-2xl text-center px-6">
           <p className="text-gray-500">
-            {id
-              ? "We couldn't load this destination."
-              : "No destination selected."}
+            We couldn&apos;t load this destination.
           </p>
           <div className="flex items-center gap-3">
-            {id && (
-              <button
-                onClick={retry}
-                className="px-6 py-2.5 rounded-xl border-2 border-[rgb(13,162,231)] text-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
-              >
-                Retry
-              </button>
-            )}
+            <button
+              onClick={retry}
+              className="px-6 py-2.5 rounded-xl border-2 border-[rgb(13,162,231)] text-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
+            >
+              Retry
+            </button>
             <Link
-              href="/destinations"
+              href={`/destinations/${id}`}
               className="px-6 py-2.5 rounded-xl border border-border text-[rgb(15,23,42)] font-semibold hover:bg-white transition-all"
             >
-              Browse destinations
+              Back to destination
             </Link>
           </div>
         </div>
@@ -183,13 +176,9 @@ function BookingFlow({ destination }: { destination: Destination }) {
   const [today, setToday] = useState("");
   const roomMenuRef = useRef<HTMLDivElement>(null);
 
-  // After mount: set "today" (so server and browser can't disagree) and carry
-  // over the date and guest count picked in the destination sidebar.
+  // Set after mount so the server and the browser can't disagree about "today"
   useEffect(() => {
-    const t = toDateString(new Date());
-    setToday(t);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setToday(toDateString(new Date()));
   }, []);
 
   // Close the room menu when clicking outside it
@@ -397,20 +386,99 @@ function BookingFlow({ destination }: { destination: Destination }) {
           </div>
 
           {step === 2 ? (
-            <div className="border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] rounded-2xl p-8 space-y-4">
-              <h2 className="font-heading font-bold text-xl text-[rgb(15,23,41)]">
-                Guest Details
-              </h2>
-              <p className="text-sm text-[rgb(99,111,129)]">
-                Your selection is saved. The guest details form comes next.
-              </p>
-              <button
-                type="button"
-                onClick={() => setConfirmed(null)}
-                className="px-6 py-2.5 rounded-xl border border-[rgb(225,231,239)] text-sm font-semibold text-[rgb(15,23,41)] hover:bg-[rgb(242,245,247)] transition-all"
-              >
-                Back
-              </button>
+            <div className="lg:col-span-2 space-y-8">
+              <form>
+                <div className="space-y-6">
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="John Doe"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="john@example.com"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
+                        placeholder="+1 234 567 8900"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div>
+                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                        Special Requests (Optional)
+                      </label>
+                      <textarea
+                        rows={3}
+                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none resize-none"
+                        placeholder="Dietary restrictions, room preferences, etc."
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="opacity-100 transform-none">
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        className="flex-1 py-3 rounded-xl border border-[rgb(225,231,239)] text-[rgb(15,23,41)] font-semibold hover:bg-[rgb(242,245,247)] transition-colors"
+                      >
+                        Back
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 text-white  cursor-pointer bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] px-6 rounded-xl py-3 rounded-xl flex items-center justify-center gap-2 group"
+                      >
+                        Confirm Booking{" "}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="lucide lucide-credit-card h-4 w-4 group-hover:translate-x-0.5 transition-transform"
+                        >
+                          <rect
+                            width="20"
+                            height="14"
+                            x="2"
+                            y="5"
+                            rx="2"
+                          ></rect>
+                          <line x1="2" x2="22" y1="10" y2="10"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           ) : (
             <form noValidate onSubmit={handleSubmit}>
@@ -735,7 +803,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
 
         {/* Summary column */}
         <div className="lg:col-span-1">
-          <div className="sticky top-20 overflow-hidden bg-[rgb(248,250,252)] border border-[rgb(225,231,239)] rounded-3xl p-6 shadow-xl shadow-[rgb(14,168,230)]/5">
+          <div className=" overflow-hidden bg-[rgb(248,250,252)] border border-[rgb(225,231,239)] rounded-3xl p-6 shadow-xl shadow-[rgb(14,168,230)]/5">
             {recalculating && (
               <LoadingBar
                 key={recalcTick}

@@ -1,5 +1,5 @@
 import { MdOutlineAddLocationAlt } from "react-icons/md";
-import BookingDetails from "../../../../../components/ui/DestinationPageCard";
+import BookingDetails from "../../../../../components/ui/bookingDetails";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
