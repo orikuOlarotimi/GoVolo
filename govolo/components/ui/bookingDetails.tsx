@@ -23,11 +23,18 @@ import {
 import { toast } from "sonner";
 import LoadingBar from "@/components/ui/loadingBar";
 import type { AddOn, Destination, RoomType } from "@/types/destination";
+import { ApiError } from "@/utils/apiClient";
+import { useApiFetch } from "@/utils/useApiFetch"; // adjust to your actual path
+
+
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const SERVICE_FEE = 0;
 const RECALC_MS = 450;
 const CONTAINER = "container mx-auto px-4 py-16 max-w-6xl relative z-10";
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^\+?[0-9\s-]{7,20}$/;
 
 type DestinationApiResponse = {
   success: boolean;
@@ -43,7 +50,7 @@ type LineItem = {
 
 export type BookingSelection = {
   destinationId: string;
-  roomType: { name: string; price: number };
+  roomType: { name: string; price: number, _id: string };
   checkIn: string;
   checkOut: string;
   nights: number;
@@ -152,11 +159,10 @@ export default function BookingDetails({
 // ---------- the booking flow ----------
 
 function BookingFlow({ destination }: { destination: Destination }) {
-  const rooms: RoomType[] = destination.roomTypes?.length
-    ? destination.roomTypes
-    : [{ name: "Standard Room", price: destination.price }];
+  const rooms: RoomType[] = destination.roomTypes;
   const addOnList: AddOn[] = destination.addOns ?? [];
   const maxGuests = destination.groupSize?.max;
+  
 
   const [confirmed, setConfirmed] = useState<BookingSelection | null>(null);
   const step = confirmed ? 2 : 1;
@@ -175,6 +181,32 @@ function BookingFlow({ destination }: { destination: Destination }) {
   );
   const [today, setToday] = useState("");
   const roomMenuRef = useRef<HTMLDivElement>(null);
+  const [guest, setGuest] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    specialRequests: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+
+  const updateGuest = (field: keyof typeof guest, value: string) =>
+    setGuest((g) => ({ ...g, [field]: value }));
+
+  // Trimmed values (trimmed on submit logic, not while typing, so spaces still work)
+  const fullName = guest.fullName.trim();
+  const email = guest.email.trim().toLowerCase();
+  const phone = guest.phone.trim();
+  const specialRequests = guest.specialRequests.trim();
+
+  const canConfirm =
+    fullName.length >= 2 &&
+    fullName.length <= 100 &&
+    EMAIL_REGEX.test(email) &&
+    PHONE_REGEX.test(phone) &&
+    specialRequests.length <= 500 &&
+    !submitting &&
+    !bookingId;
 
   // Set after mount so the server and the browser can't disagree about "today"
   useEffect(() => {
@@ -249,6 +281,51 @@ function BookingFlow({ destination }: { destination: Destination }) {
   const prevPricingKey = useRef(pricingKey);
   const [recalcTick, setRecalcTick] = useState(0);
   const [recalculating, setRecalculating] = useState(false);
+   const apiFetch = useApiFetch();
+
+  const handleConfirmBooking = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!confirmed || !canConfirm) return;
+
+    if (!room._id) {
+      toast.error("This room type can't be booked right now.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+ const res = await apiFetch<{
+   success: boolean;
+   booking: { _id: string };
+ }>("/api/booking", {
+   method: "POST",
+   body: {
+     destinationId: confirmed.destinationId,
+     roomTypeId: room._id,
+     checkIn: confirmed.checkIn,
+     checkOut: confirmed.checkOut,
+     adults: confirmed.adults,
+     children: confirmed.children,
+     guestDetails: { fullName, email, phone, specialRequests },
+   },
+   requiresAuth: true,
+ });
+
+ setBookingId(res.booking._id);
+      toast.success("Your booking has been created successfully.");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        console.error("Booking failed:", error.message, error.data);
+      } else {
+        console.error("Booking failed:", error);
+      }
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (prevPricingKey.current === pricingKey) return;
@@ -306,7 +383,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
     setErrors({});
     setConfirmed({
       destinationId: destination._id,
-      roomType: { name: room.name, price: room.price },
+      roomType: { name: room.name, price: room.price, _id: room._id },
       checkIn,
       checkOut,
       nights,
@@ -339,6 +416,9 @@ function BookingFlow({ destination }: { destination: Destination }) {
 
   const labelClass =
     "text-sm font-semibold text-[rgb(15,23,41)] mb-2 flex items-center gap-2";
+  
+  const inputClass =
+    "w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none";
 
   return (
     <div className={CONTAINER}>
@@ -387,95 +467,96 @@ function BookingFlow({ destination }: { destination: Destination }) {
 
           {step === 2 ? (
             <div className="lg:col-span-2 space-y-8">
-              <form>
+              <form noValidate onSubmit={handleConfirmBooking}>
                 <div className="space-y-6">
-                  <div className="opacity-100 transform-none">
-                    <div>
-                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
-                        placeholder="John Doe"
-                        value=""
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      autoComplete="name"
+                      maxLength={100}
+                      className={inputClass}
+                      placeholder="John Doe"
+                      value={guest.fullName}
+                      onChange={(e) => updateGuest("fullName", e.target.value)}
+                    />
                   </div>
-                  <div className="opacity-100 transform-none">
-                    <div>
-                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
-                        placeholder="john@example.com"
-                        value=""
-                      />
-                    </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      autoComplete="email"
+                      className={inputClass}
+                      placeholder="john@example.com"
+                      value={guest.email}
+                      onChange={(e) => updateGuest("email", e.target.value)}
+                    />
                   </div>
-                  <div className="opacity-100 transform-none">
-                    <div>
-                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none"
-                        placeholder="+1 234 567 8900"
-                        value=""
-                      />
-                    </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      autoComplete="tel"
+                      maxLength={20}
+                      className={inputClass}
+                      placeholder="+1 234 567 8900"
+                      value={guest.phone}
+                      onChange={(e) => updateGuest("phone", e.target.value)}
+                    />
                   </div>
-                  <div className="opacity-100 transform-none">
-                    <div>
-                      <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
-                        Special Requests (Optional)
-                      </label>
-                      <textarea
-                        rows={3}
-                        className="w-full p-3 rounded-xl border border-[rgb(225,231,239)] bg-[rgb(248,250,252)] text-[rgb(15,23,41)] focus:border-[rgb(14,168,230)] focus:ring-2 focus:ring-[rgb(14,168,230)]/20 outline-none resize-none"
-                        placeholder="Dietary restrictions, room preferences, etc."
-                      ></textarea>
-                    </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-[rgb(15,23,41)] mb-2">
+                      Special Requests (Optional)
+                    </label>
+                    <textarea
+                      rows={3}
+                      maxLength={500}
+                      className={`${inputClass} resize-none`}
+                      placeholder="Dietary restrictions, room preferences, etc."
+                      value={guest.specialRequests}
+                      onChange={(e) =>
+                        updateGuest("specialRequests", e.target.value)
+                      }
+                    />
                   </div>
-                  <div className="opacity-100 transform-none">
+
+                  <div>
                     <div className="flex gap-3">
                       <button
                         type="button"
-                        className="flex-1 py-3 rounded-xl border border-[rgb(225,231,239)] text-[rgb(15,23,41)] font-semibold hover:bg-[rgb(242,245,247)] transition-colors"
+                        disabled={submitting || !!bookingId}
+                        onClick={() => setConfirmed(null)}
+                        className="flex-1 py-3 rounded-xl border border-[rgb(225,231,239)] text-[rgb(15,23,41)] font-semibold hover:bg-[rgb(242,245,247)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Back
                       </button>
                       <button
                         type="submit"
-                        className="flex-1 text-white  cursor-pointer bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] px-6 rounded-xl py-3 rounded-xl flex items-center justify-center gap-2 group"
+                        disabled={!canConfirm}
+                        className="flex-1 text-white cursor-pointer bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] px-6 py-3 rounded-xl flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Confirm Booking{" "}
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-credit-card h-4 w-4 group-hover:translate-x-0.5 transition-transform"
-                        >
-                          <rect
-                            width="20"
-                            height="14"
-                            x="2"
-                            y="5"
-                            rx="2"
-                          ></rect>
-                          <line x1="2" x2="22" y1="10" y2="10"></line>
-                        </svg>
+                        {bookingId
+                          ? "Booking Created"
+                          : submitting
+                            ? "Confirming…"
+                            : "Confirm Booking"}
                       </button>
                     </div>
+                    {!canConfirm && !submitting && !bookingId && (
+                      <p className="text-xs text-[rgb(99,111,129)] text-center mt-2">
+                        Enter a valid full name, email, and phone number to
+                        continue.
+                      </p>
+                    )}
                   </div>
                 </div>
               </form>
