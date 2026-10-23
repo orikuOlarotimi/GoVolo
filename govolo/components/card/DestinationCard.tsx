@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Star, MapPin } from "lucide-react";
+import Link from "next/link";
 
 type DestinationCardProps = {
+  id: string;
   image: string;
   location: string;
   tours: string | number;
@@ -14,6 +16,7 @@ type DestinationCardProps = {
 };
 
 export default function DestinationCard({
+  id,
   image,
   location,
   tours,
@@ -86,7 +89,10 @@ export default function DestinationCard({
           <p className="text-[12px] text-white-60 mt-0.5">{tours} Tours</p>
         </div>
 
-        <button className="cursor-pointer shrink-0 w-9 h-9 rounded-xl bg-white/10 backdrop-blur-sm border border-white/25 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 hover:bg-primary hover:border-primary">
+        <Link
+          href={`/destinations/${id}`}
+          className="cursor-pointer shrink-0 w-9 h-9 rounded-xl bg-white/10 backdrop-blur-sm border border-white/25 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300 hover:bg-primary hover:border-primary"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -102,7 +108,7 @@ export default function DestinationCard({
             <path d="M5 12h14"></path>
             <path d="m12 5 7 7-7 7"></path>
           </svg>
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ type Rating = {
 }
 
 type Destination = {
-  _id?: string;
+  _id: string;
   title: string;
   description: string;
   rating: Rating;
@@ -39,6 +39,7 @@ function truncateDesc(description: string) {
 
 function toCardProps(dest: Destination, isTop: boolean) {
   return {
+    id: dest._id,
     image: dest.mainImage,
     location: dest.title,
     tours: dest.visits ?? 0,

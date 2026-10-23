@@ -9,32 +9,62 @@ type Rating = {
   count?: number;
 };
 
-type Accommodation = {
+type GroupSize = {
   min: number;
   max: number;
 };
 
-type Booking = {
+type Destination = {
   _id?: string;
-  title: string;
+  title?: string;
   location?: string;
-  price: number;
-  days: number;
-  accommodation: Accommodation;
-  checkpoints?: string[];
-  tag?: string;
-  rating?: Rating;
+  mainImage?: string;
 };
 
-type BookingsApiResponse = {
-  success: boolean;
-  count?: number;
-  total?: number;
-  bookings?: Booking[];
+type AddOn = {
+  _id?: string;
+  name: string;
+  price: number;
+  unit: string;
 };
+
+type TravelPackage = {
+  _id?: string;
+  destination?: Destination | null;
+  price: number;
+  duration: string;
+  groupSize: GroupSize;
+  rating?: Rating;
+  createdAt?: string;
+  addOns: AddOn[];
+  included: string[];
+};
+
+// type Booking = {
+//   _id?: string;
+//   title: string;
+//   location?: string;
+//   price: number;
+//   days: number;
+//   accommodation: Accommodation;
+//   checkpoints?: string[];
+//   tag?: string;
+//   rating?: Rating;
+// };
+
+type PackagesApiResponse = {
+  success: boolean;
+  page?: number;
+  totalPages?: number;
+  total?: number;
+  count?: number;
+  packages?: TravelPackage[];
+};
+
+
 
 type AdventureCardProps = {
-  data: BookingsApiResponse;
+  data: PackagesApiResponse;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -45,29 +75,30 @@ const TAG_BACKGROUNDS = [
   "bg-gradient-to-br from-violet-400 to-purple-600",
 ];
 
-function formatPeople(accommodation: Accommodation): string {
-  if (!accommodation) return "";
-  const { min, max } = accommodation;
+function formatPeople(groupSize?: GroupSize): string {
+  if (!groupSize) return "";
+  const { min, max } = groupSize;
   if (min === max) return `${min}`;
   return `${min}–${max}`;
 }
 
-function toCardProps(booking: Booking, index: number) {
+function toCardProps(pkg: TravelPackage, index: number) {
   const features: string[] = [];
-  if (booking.checkpoints?.length) {
-    features.push(...booking.checkpoints.slice(0, 4));
+  if (pkg?.included?.length) {
+    features.push(...pkg.included.slice(0, 4));
   }
 
   return {
-    label: booking.location,
-    title: booking.title,
-    price: booking.price,
-    duration: `${booking.days} Days`,
-    rating: booking.rating?.average ?? 0,
-    reviews: booking.rating?.count ?? 0,
-    people: formatPeople(booking.accommodation),
+    mainImage: pkg.destination?.mainImage,
+    label: pkg.destination?.location,
+    title: pkg.destination?.title ?? "Untitled package",
+    price: pkg.price,
+    duration: pkg.duration,
+    rating: pkg.rating?.average ?? 0,
+    reviews: pkg.rating?.count ?? 0,
+    people: formatPeople(pkg.groupSize),
     features,
-    tag: booking.tag ?? undefined,
+    tag: "trending",
     backgroundColor: TAG_BACKGROUNDS[index % TAG_BACKGROUNDS.length],
   };
 }
@@ -75,11 +106,11 @@ function toCardProps(booking: Booking, index: number) {
 const AdventureCard = ({ data: initialData }: AdventureCardProps) => {
   const initialSuccess = initialData?.success ?? false;
   const initialItems =
-    initialSuccess && Array.isArray(initialData?.bookings)
-      ? initialData.bookings.slice(0, 3)
+    initialSuccess && Array.isArray(initialData?.packages)
+      ? initialData.packages.slice(0, 3)
       : [];
 
-  const [items, setItems] = useState<Booking[]>(initialItems);
+  const [items, setItems] = useState<TravelPackage[]>(initialItems);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(!initialSuccess);
 
@@ -87,15 +118,16 @@ const AdventureCard = ({ data: initialData }: AdventureCardProps) => {
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(`${API_URL}/api/booking?limit=3`);
+      // Adjust this path to match your packages route
+      const res = await fetch(`${API_URL}/api/packages?limit=3`);
       if (!res.ok) throw new Error("Request failed");
-      const json: BookingsApiResponse = await res.json();
+      const json: PackagesApiResponse = await res.json();
 
-      if (!json.success || !Array.isArray(json.bookings)) {
+      if (!json.success || !Array.isArray(json.packages)) {
         throw new Error("Unsuccessful response");
       }
 
-      setItems(json.bookings.slice(0, 3));
+      setItems(json.packages.slice(0, 3));
     } catch {
       setError(true);
     } finally {
@@ -171,9 +203,10 @@ const AdventureCard = ({ data: initialData }: AdventureCardProps) => {
           </div>
         ) : (
           <div className={`${gridClasses} max-w-5xl mx-auto container`}>
-            {items.map((booking, index) => (
-              <div key={booking._id ?? index} className={cardWrapperClass}>
-                <TravelCard {...toCardProps(booking, index)} />
+            {items.map((pkg, index) => (
+              <div key={pkg._id ?? index} className={cardWrapperClass}>
+          
+                <TravelCard {...toCardProps(pkg, index)} />
               </div>
             ))}
           </div>
