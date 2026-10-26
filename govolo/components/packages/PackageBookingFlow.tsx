@@ -99,18 +99,20 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
 
   const totalGuests = adults + children;
   const overMax = totalGuests > maxGuests;
+  // daysBetween(checkIn, checkOut) = number of nights (Jan 1 -> Jan 4 = 3)
   const days = checkIn && checkOut ? daysBetween(checkIn, checkOut) : 0;
   const overDuration = maxDays !== undefined && days > maxDays;
   const priceReady = days >= 1 && !overDuration;
 
-  // The package price is flat: guests don't change it. Add-ons are flat per day.
+  // The package price is per night: it scales with the length of the stay,
+  // not with the number of guests. Add-ons are also charged per night.
   const lineItems: LineItem[] = [];
   if (priceReady) {
     lineItems.push({
       key: "package",
       label: "Package",
-      formula: "Flat package price",
-      amount: pkg.price,
+      formula: `${money(pkg.price)} × ${plural(days, "night", "nights")}`,
+      amount: pkg.price * days,
     });
 
     selectedAddOns.forEach((i) => {
@@ -119,7 +121,7 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
       lineItems.push({
         key: `addon-${i}`,
         label: a.name,
-        formula: `${money(a.price)} × ${plural(days, "day", "days")}`,
+        formula: `${money(a.price)} × ${plural(days, "night", "nights")}`,
         amount: a.price * days,
       });
     });
@@ -342,6 +344,10 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
                           </span>
                           <span>•</span>
                           <span>{pkg.duration}</span>
+                          <span>•</span>
+                          <span className="font-medium text-[rgb(14,168,230)]">
+                            {money(pkg.price)} / night
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -568,7 +574,7 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
               {priceReady ? (
                 <div className="space-y-4">
                   <p className="text-xs text-[rgb(99,111,129)]">
-                    {destination.location} · {plural(days, "day", "days")} ·{" "}
+                    {destination.location} · {plural(days, "night", "nights")} ·{" "}
                     {plural(totalGuests, "guest", "guests")}
                   </p>
                   {lineItems.map((item) => (
@@ -600,10 +606,26 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
                           <span className="font-medium text-[rgb(15,23,41)]">
                             {item.label}:
                           </span>{" "}
-                          {item.formula}
+                          {item.formula} = {money(item.amount)}
                         </li>
                       ))}
+                      <li className="pt-1.5 border-t border-dashed border-[rgb(225,231,239)]">
+                        <span className="font-medium text-[rgb(15,23,41)]">
+                          Total:
+                        </span>{" "}
+                        {lineItems
+                          .map((item) => money(item.amount))
+                          .join(" + ")}{" "}
+                        ={" "}
+                        <span className="font-semibold text-[rgb(14,168,230)]">
+                          {money(total)}
+                        </span>
+                      </li>
                     </ul>
+                    <p className="text-[11px] text-[rgb(99,111,129)] mt-2">
+                      Prices are per night and don&apos;t change with the number
+                      of guests.
+                    </p>
                   </div>
                 </div>
               ) : (
