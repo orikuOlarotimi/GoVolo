@@ -1,9 +1,11 @@
 import React from "react";
 import { Star, Clock, Users, Check } from "lucide-react";
+import Link from "next/link";
 
 type Feature = string;
 
 interface TravelCardProps {
+  _id: string;
   label?: string; // optional
   title: string;
   price: number;
@@ -19,6 +21,7 @@ interface TravelCardProps {
 }
 
 const TravelCard: React.FC<TravelCardProps> = ({
+  _id,
   label,
   title,
   price,
@@ -31,6 +34,20 @@ const TravelCard: React.FC<TravelCardProps> = ({
   backgroundColor,
   tag,
 }) => {
+  console.log({
+    _id,
+    label,
+    title,
+    price,
+    duration,
+    rating,
+    reviews,
+    people,
+    features,
+    buttonText,
+    backgroundColor,
+    tag,
+  });
   return (
     <div className="w-full rounded-3xl overflow-hidden shadow-lg bg-white hover:-translate-y-2 transition-all duration-300 hover:shadow-xl hover:border border-[rgb(56,189,248)]">
       {/* Top Section */}
@@ -155,26 +172,28 @@ const TravelCard: React.FC<TravelCardProps> = ({
       </div>
 
       {/* Button */}
-      <div className="px-6 pb-6">
-        <button className="w-full font-semibold transition-all duration-200 cursor-pointer rounded-xl py-3 flex items-center justify-center gap-2 hover:bg-gray-50   group border-2 border-border hover:border-[rgb(13,162,231)] hover:text-[rgb(13,162,231)] bg-transparent">
-          {buttonText}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
-          >
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
+      <Link href={`/packages/${_id}`} className="px-6 pb-6">
+        <div className="px-6 pb-4">
+          <button className="w-full font-semibold transition-all duration-200 cursor-pointer rounded-xl py-3 flex items-center justify-center gap-2 hover:bg-gray-50   group border-2 border-border hover:border-[rgb(13,162,231)] hover:text-[rgb(13,162,231)] bg-transparent">
+            {buttonText}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-right h-4 w-4 group-hover:translate-x-0.5 transition-transform mt-[3px]"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </Link>
     </div>
   );
 };

@@ -109,6 +109,7 @@ export default function PackagesList({
           .map((pkg) => (
             <TravelCard
               key={pkg._id}
+              _id={pkg._id}
               label={pkg.destination!.location}
               title={pkg.destination!.title}
               price={pkg.price}

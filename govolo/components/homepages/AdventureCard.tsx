@@ -15,7 +15,7 @@ type GroupSize = {
 };
 
 type Destination = {
-  _id?: string;
+  _id: string;
   title?: string;
   location?: string;
   mainImage?: string;
@@ -29,7 +29,7 @@ type AddOn = {
 };
 
 type TravelPackage = {
-  _id?: string;
+  _id: string;
   destination?: Destination | null;
   price: number;
   duration: string;
@@ -39,18 +39,6 @@ type TravelPackage = {
   addOns: AddOn[];
   included: string[];
 };
-
-// type Booking = {
-//   _id?: string;
-//   title: string;
-//   location?: string;
-//   price: number;
-//   days: number;
-//   accommodation: Accommodation;
-//   checkpoints?: string[];
-//   tag?: string;
-//   rating?: Rating;
-// };
 
 type PackagesApiResponse = {
   success: boolean;
@@ -89,6 +77,7 @@ function toCardProps(pkg: TravelPackage, index: number) {
   }
 
   return {
+    _id: pkg._id,
     mainImage: pkg.destination?.mainImage,
     label: pkg.destination?.location,
     title: pkg.destination?.title ?? "Untitled package",
