@@ -50,13 +50,13 @@ type LineItem = {
 
 export type BookingSelection = {
   destinationId: string;
-  roomType: { name: string; price: number, _id: string };
+  roomType: { name: string; price: number; _id: string };
   checkIn: string;
   checkOut: string;
   nights: number;
   adults: number;
   children: number;
-  addOns: { name: string; price: number; unit: string }[];
+  addOns: { id: string; name: string; price: number; unit: string }[];
   estimatedTotal: number; // display only: the server must recompute the price
 };
 
@@ -297,7 +297,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
  const res = await apiFetch<{
    success: boolean;
    booking: { _id: string };
- }>("/api/booking", {
+ }>("/api/booking/destination", {
    method: "POST",
    body: {
      destinationId: confirmed.destinationId,
@@ -306,6 +306,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
      checkOut: confirmed.checkOut,
      adults: confirmed.adults,
      children: confirmed.children,
+     addOns: confirmed.addOns,
      guestDetails: { fullName, email, phone, specialRequests },
    },
    requiresAuth: true,
@@ -389,17 +390,19 @@ function BookingFlow({ destination }: { destination: Destination }) {
       nights,
       adults,
       children,
-      addOns: selectedAddOns.flatMap((i) =>
-        addOnList[i]
+      addOns: selectedAddOns.flatMap((i) => {
+        const a = addOnList[i];
+        return a?._id
           ? [
               {
-                name: addOnList[i].name,
-                price: addOnList[i].price,
-                unit: addOnList[i].unit ?? "/night",
+                id: a._id,
+                name: a.name,
+                price: a.price,
+                unit: a.unit ?? "/night",
               },
             ]
-          : [],
-      ),
+          : [];
+      }),
       estimatedTotal: total,
     });
   };

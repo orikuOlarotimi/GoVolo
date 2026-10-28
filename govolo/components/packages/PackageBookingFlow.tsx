@@ -53,7 +53,7 @@ type Selection = {
   checkOut: string;
   adults: number;
   children: number;
-  addOns: { _id: string; name: string; price: number }[];
+  addOns: { id: string; name: string; price: number }[];
 };
 
 export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
@@ -186,7 +186,7 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
       children,
       addOns: selectedAddOns.flatMap((i) => {
         const a = addOnList[i];
-        return a?._id ? [{ _id: a._id, name: a.name, price: a.price }] : [];
+        return a?._id ? [{ id: a._id, name: a.name, price: a.price }] : [];
       }),
     });
   };
@@ -219,11 +219,6 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
       toast.success("Your booking has been created successfully.");
       router.push("/");
     } catch (error) {
-      if (error instanceof ApiError) {
-        console.error("Package booking failed:", error.message, error.data);
-      } else {
-        console.error("Package booking failed:", error);
-      }
       toast.error(
         error instanceof Error ? error.message : "Something went wrong",
       );

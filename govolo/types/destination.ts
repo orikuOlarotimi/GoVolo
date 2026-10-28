@@ -8,7 +8,7 @@ export type RoomType = {
 };
 export type TripHighlight = { title: string; description: string };
 export type ItineraryDay = { day: number; title: string; description?: string };
-export type AddOn = { name: string; price: number; unit?: string };
+export type AddOn = { _id?: string; name: string; price: number; unit?: string };
 export type Creator = {
   fullName?: string;
   lastName?: string;
