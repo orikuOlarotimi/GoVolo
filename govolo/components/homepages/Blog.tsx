@@ -3,18 +3,21 @@
 import React, { useState } from "react";
 import Section from "../animationComponents/Section";
 import PostCard from "../card/PostCard";
+import Link from "next/link"
 
 type BlogAuthor = {
-  name?: string;
+  _id?: string;
+  firstName?: string;
 };
 
 type Blog = {
-  id: string;
+  _id: string;
   title: string;
   mainImage: string;
-  tag: string;
-  details: string;
-  author?: BlogAuthor;
+  tags: string[];
+  shortDescription: string;
+  readTimeMinutes: number;
+  createdBy?: BlogAuthor;
   visits?: number;
   createdAt: string;
   isTrending?: boolean;
@@ -34,7 +37,9 @@ type BlogProps = {
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const FIXED_READ_TIME = "10 min read";
+
+const formatReadTime = (minutes?: number) =>
+  minutes && minutes > 0 ? `${minutes} min read` : "";
 
 function formatDate(dateString: string) {
   if (!dateString) return "";
@@ -109,9 +114,11 @@ const Blog = ({ data: initialData }: BlogProps) => {
             Trending
           </span>
         )}
-        <span className="bg-black/30 backdrop-blur-sm border border-white/20 text-white text-[11px] font-medium px-3 py-1 rounded-full ml-auto">
-          {blog.tag}
-        </span>
+        {blog.tags?.[0] && (
+          <span className="bg-black/30 backdrop-blur-sm border border-white/20 text-white text-[11px] font-medium px-3 py-1 rounded-full ml-auto">
+            {blog.tags[0]}
+          </span>
+        )}
       </div>
 
       <div className="absolute bottom-5 md:bottom-2 lg:bottom-5 w-full px-6">
@@ -152,34 +159,35 @@ const Blog = ({ data: initialData }: BlogProps) => {
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            {FIXED_READ_TIME}
+            {formatReadTime(blog.readTimeMinutes)}
           </span>
         </div>
         <h1 className="font-heading font-bold text-white text-2xl md:text-[17px] lg:text-3xl leading-tight mb-3 md:mb-1 lg:mb-3 group-hover:text-[rgb(13,162,231)]/90 transition-colors duration-300 line-clamp-2">
           {blog.title}
         </h1>
         <p className="mb-5 md:mb-1 lg:mb-5 max-w-lg text-white/65 text-sm leading-relaxed md:leading-[1.2] lg:leading-relaxed line-clamp-2">
-          {truncateDetails(blog.details)}
+          {truncateDetails(blog.shortDescription)}
         </p>
-
-        <button className="flex items-center gap-2 text-[rgb(13,162,231)] font-semibold text-sm group-hover:gap-3 transition-all">
-          Read Article{" "}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-arrow-right h-4 w-4"
-          >
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </button>
+        <Link href="/blogs">
+          <button className="flex items-center gap-2 text-[rgb(13,162,231)] font-semibold text-sm group-hover:gap-3 transition-all cursor-pointer">
+            Read Article{" "}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-right h-4 w-4"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
+        </Link>
       </div>
     </div>
   );
@@ -195,14 +203,14 @@ const Blog = ({ data: initialData }: BlogProps) => {
           {renderFeaturedCard(featured, "h-[340px]")}
           {rest.map((blog) => (
             <PostCard
-              key={blog.id}
-              id={blog.id}
+              key={blog._id}
+              id={blog._id}
               img={blog.mainImage}
-              tag={blog.tag}
+              tag={blog.tags?.[0] ?? ""}
               title={blog.title}
-              para={truncateDetails(blog.details)}
+              para={truncateDetails(blog.shortDescription)}
               date={formatDate(blog.createdAt)}
-              time={FIXED_READ_TIME}
+              time={formatReadTime(blog.readTimeMinutes)}
             />
           ))}
         </div>
@@ -217,14 +225,14 @@ const Blog = ({ data: initialData }: BlogProps) => {
         </div>
         {rest.map((blog) => (
           <PostCard
-            key={blog.id}
-            id={blog.id}
+            key={blog._id}
+            id={blog._id}
             img={blog.mainImage}
-            tag={blog.tag}
+            tag={blog.tags?.[0] ?? ""}
             title={blog.title}
-            para={truncateDetails(blog.details)}
+            para={truncateDetails(blog.shortDescription)}
             date={formatDate(blog.createdAt)}
-            time={FIXED_READ_TIME}
+            time={formatReadTime(blog.readTimeMinutes)}
           />
         ))}
       </div>
@@ -333,24 +341,26 @@ const Blog = ({ data: initialData }: BlogProps) => {
                 </p>
                 {/*  */}
                 {items.length > 0 && (
-                  <button className="relative inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-white/25 transition-colors group cursor-pointer">
-                    Explore All{" "}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-arrow-right h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform"
-                    >
-                      <path d="M5 12h14"></path>
-                      <path d="m12 5 7 7-7 7"></path>
-                    </svg>
-                  </button>
+                  <Link href="/blogs">
+                    <button className="relative inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-white/25 transition-colors group cursor-pointer">
+                      Explore All{" "}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-arrow-right h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                      </svg>
+                    </button>
+                  </Link>
                 )}
               </div>
             )}
