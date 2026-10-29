@@ -2,6 +2,7 @@ import React from "react";
 import { Star, MapPin, Users, Award, Tag, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Section from "../animationComponents/Section";
+import Link from "next/link"
 export default function CTA() {
   return (
     <Section>
@@ -81,15 +82,19 @@ export default function CTA() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
-              <Button className="bg-white hover:bg-slate-50 text-[#288dda] font-bold px-8 py-6 rounded-full text-base transition-all shadow-xl">
-                Book Your Trip Now <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                className="bg-transparent hover:bg-white/10 text-white border-white/50 hover:border-white font-bold px-8 py-6 rounded-full text-base transition-all"
-              >
-                Explore Packages <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href="/packages">
+                <Button className="bg-white hover:bg-slate-50 text-[#288dda] font-bold px-8 py-6 rounded-full text-base transition-all shadow-xl cursor-pointer">
+                  Book Your Trip Now <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/packages">
+                <Button
+                  variant="outline"
+                  className="cursor-pointer bg-transparent hover:bg-white/10 text-white border-white/50 hover:border-white font-bold px-8 py-6 rounded-full text-base transition-all"
+                >
+                  Explore Packages <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
             </div>
 
             {/* Glassmorphism Stats Bar */}

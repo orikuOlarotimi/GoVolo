@@ -1,10 +1,16 @@
+"use client"
 import React from "react";
 import { Mail, Phone, MapPin, Clock, ChevronRight, Send, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+import { useState } from "react";
 import Section from "../animationComponents/Section";
+import { useApiFetch } from "@/utils/useApiFetch";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default function Contact() {
   const contactInfo = [
     {
@@ -36,6 +42,69 @@ export default function Contact() {
       subtext: "Always here for you",
     },
   ];
+
+  const apiFetch = useApiFetch();
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const updateField = (field: keyof typeof form, value: string) =>
+    setForm((f) => ({ ...f, [field]: value }));
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    const name = form.name.trim();
+    const email = form.email.trim().toLowerCase();
+    const subject = form.subject.trim();
+    const message = form.message.trim();
+
+    // same rules as the backend, so most mistakes are caught before sending
+    if (name.length < 2 || name.length > 100) {
+      toast.error("Name must be between 2 and 100 characters");
+      return;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    if (subject.length > 150) {
+      toast.error("Subject must not exceed 150 characters");
+      return;
+    }
+    if (message.length < 10 || message.length > 2000) {
+      toast.error("Message must be between 10 and 2000 characters");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await apiFetch<{ success: boolean; message: string }>(
+        "/api/contact",
+        {
+          method: "POST",
+          body: { name, email, subject, message },
+          requiresAuth: false,
+        },
+      );
+
+      toast.success(res.message || "Your message has been sent.");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Contact message failed:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Section>
@@ -126,11 +195,15 @@ export default function Contact() {
                   </p>
                 </div>
 
-                <form className="space-y-6">
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Input
                         placeholder="Your Name"
+                        value={form.name}
+                        maxLength={100}
+                        autoComplete="name"
+                        onChange={(e) => updateField("name", e.target.value)}
                         className="bg-slate-50 border-slate-200 h-14 rounded-xl focus-visible:ring-[#20c997]"
                       />
                     </div>
@@ -138,6 +211,9 @@ export default function Contact() {
                       <Input
                         type="email"
                         placeholder="Email Address"
+                        value={form.email}
+                        autoComplete="email"
+                        onChange={(e) => updateField("email", e.target.value)}
                         className="bg-slate-50 border-slate-200 h-14 rounded-xl focus-visible:ring-[#20c997]"
                       />
                     </div>
@@ -145,7 +221,10 @@ export default function Contact() {
 
                   <div className="space-y-2">
                     <Input
-                      placeholder="Subject"
+                      placeholder="Subject (optional)"
+                      value={form.subject}
+                      maxLength={150}
+                      onChange={(e) => updateField("subject", e.target.value)}
                       className="bg-slate-50 border-slate-200 h-14 rounded-xl focus-visible:ring-[#20c997]"
                     />
                   </div>
@@ -153,13 +232,20 @@ export default function Contact() {
                   <div className="space-y-2">
                     <Textarea
                       placeholder="Your Message"
+                      value={form.message}
+                      maxLength={2000}
+                      onChange={(e) => updateField("message", e.target.value)}
                       className="bg-slate-50 border-slate-200 min-h-40 rounded-xl resize-none focus-visible:ring-[#20c997] p-4"
                     />
                   </div>
 
-                  <Button className="w-full h-14 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl text-base font-bold shadow-lg shadow-teal-500/30 transition-all flex items-center justify-center gap-2">
+                  <Button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full h-14 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl text-base font-bold shadow-lg shadow-teal-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
                     <Send className="h-5 w-5" />
-                    Send Message
+                    {submitting ? "Sending…" : "Send Message"}
                   </Button>
 
                   <p className="text-center text-xs text-slate-400 mt-4">
