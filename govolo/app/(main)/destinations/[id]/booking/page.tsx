@@ -1,5 +1,6 @@
 import { MdOutlineAddLocationAlt } from "react-icons/md";
 import BookingDetails from "../../../../../components/ui/bookingDetails";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -44,7 +45,9 @@ export default async function BookingPage({ params }: Props) {
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-[rgb(248,250,252)] rounded-t-3xl"></div>
       </div>
 
-      <BookingDetails initialData={data} />
+      <RequireAuth>
+        <BookingDetails initialData={data} />
+      </RequireAuth>
     </div>
   );
 }
