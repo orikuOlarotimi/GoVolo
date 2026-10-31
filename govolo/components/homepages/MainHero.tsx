@@ -32,17 +32,17 @@ export default function Hero() {
           <span className="text-[#ffb703] font-semibold relative inline-block">
             with Ease
             <svg
-                className="absolute -bottom-1 left-0 w-full text-[#ffb703]"
-                viewBox="0 0 300 8"
-                fill="none"
-              >
-                <path
-                  d="M1 5.5 Q75 1 150 5.5 Q225 10 299 5.5"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+              className="absolute -bottom-1 left-0 w-full text-[#ffb703]"
+              viewBox="0 0 300 8"
+              fill="none"
+            >
+              <path
+                d="M1 5.5 Q75 1 150 5.5 Q225 10 299 5.5"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+            </svg>
           </span>
         </h1>
 
@@ -54,7 +54,7 @@ export default function Hero() {
         {/* Floating Search Box */}
         <div className="w-full max-w-5xl bg-white/95 backdrop-blur-xl rounded-3xl p-4 shadow-2xl">
           {/* Tabs */}
-          <div className="flex items-center gap-6 mb-4 px-4 pt-2">
+          <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 mb-4 px-2 sm:px-4 pt-2">
             <button className="bg-[#20c997] text-white px-5 py-1.5 rounded-full text-sm font-medium transition-colors">
               Tours
             </button>
@@ -70,63 +70,63 @@ export default function Hero() {
           </div>
 
           {/* Search Inputs Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 rounded-2xl p-2 border border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[1.3fr_1fr_1fr_1.4fr] gap-4 bg-slate-50 rounded-2xl p-2 border border-slate-100">
             {/* Location Input */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer">
-              <MapPin className="h-5 w-5 text-slate-400" />
-              <div className="flex flex-col">
+            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer min-w-0">
+              <MapPin className="h-5 w-5 shrink-0 text-slate-400" />
+              <div className="flex flex-col min-w-0 flex-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Where
                 </span>
                 <input
                   type="text"
                   placeholder="Search destinations"
-                  className="bg-transparent text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none w-full"
+                  className="bg-transparent text-sm font-medium text-slate-800 placeholder:text-slate-400 focus:outline-none w-full min-w-0"
                 />
               </div>
             </div>
 
             {/* Check-in Input */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer">
-              <Calendar className="h-5 w-5 text-slate-400" />
-              <div className="flex flex-col">
+            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer min-w-0">
+              <Calendar className="h-5 w-5 shrink-0 text-slate-400" />
+              <div className="flex flex-col min-w-0">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Check-In
                 </span>
-                <span className="text-sm font-medium text-slate-400">
+                <span className="text-sm font-medium text-slate-400 truncate">
                   Add date
                 </span>
               </div>
             </div>
 
             {/* Check-out Input */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer">
-              <Calendar className="h-5 w-5 text-slate-400" />
-              <div className="flex flex-col">
+            <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer min-w-0">
+              <Calendar className="h-5 w-5 shrink-0 text-slate-400" />
+              <div className="flex flex-col min-w-0">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   Check-Out
                 </span>
-                <span className="text-sm font-medium text-slate-400">
+                <span className="text-sm font-medium text-slate-400 truncate">
                   Add date
                 </span>
               </div>
             </div>
 
             {/* Guests & Submit Button */}
-            <div className="flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer">
-                <Users className="h-5 w-5 text-slate-400" />
-                <div className="flex flex-col">
+            <div className="flex items-stretch gap-2 sm:col-span-2 xl:col-span-1 min-w-0">
+              <div className="flex-1 min-w-0 flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-100 shadow-sm hover:border-[#20c997] transition-colors cursor-pointer">
+                <Users className="h-5 w-5 shrink-0 text-slate-400" />
+                <div className="flex flex-col min-w-0">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                     Guests
                   </span>
-                  <span className="text-sm font-medium text-slate-400">
+                  <span className="text-sm font-medium text-slate-400 truncate">
                     Add guests
                   </span>
                 </div>
               </div>
 
-              <Button className="h-full px-6 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl shadow-lg transition-all flex items-center gap-2">
+              <Button className="shrink-0 h-auto px-4 xl:px-6 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl shadow-lg transition-all flex items-center gap-2">
                 <Search className="h-4 w-4" />
                 Search
               </Button>
