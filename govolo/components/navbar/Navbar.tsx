@@ -62,18 +62,18 @@ export default function Navbar() {
   const handleBookNow = () => {
     setIsMobileMenuOpen(false);
 
-    if (!user) {
-      router.push("/login?redirect=/destinations");
-      return;
-    }
+    // if (!user) {
+    //   router.push("/login?redirect=/destinations");
+    //   return;
+    // }
 
-     if (user.status !== "verified") {
-       toast.error(
-         "Please verify your account to continue. Log in again to receive a new code.",
-       );
-       router.push("/login?redirect=/destinations");
-       return;
-     }
+    //  if (user.status !== "verified") {
+    //    toast.error(
+    //      "Please verify your account to continue. Log in again to receive a new code.",
+    //    );
+    //    router.push("/login?redirect=/destinations");
+    //    return;
+    //  }
 
      router.push("/destinations");
   };
@@ -98,7 +98,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <div className="hidden lg:flex items-center gap-5 xl:gap-8 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -111,7 +111,7 @@ export default function Navbar() {
         </div>
 
         {/* Right side: Login/Account + Book Now grouped together */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-4">
           {loading ? (
             <div
               className={`h-9 w-20 animate-pulse rounded-md ${
@@ -152,7 +152,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger Toggle */}
         <button
-          className="md:hidden p-2 z-50 focus:outline-none"
+          className="lg:hidden p-2 z-50 focus:outline-none"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle Menu"
         >
@@ -169,7 +169,8 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu Card */}
         {isMobileMenuOpen && (
-          <div className="absolute top-[120%] left-0 right-0 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 flex flex-col p-6 gap-6 md:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="absolute top-[120%] left-0 right-0 max-h-[calc(100vh-7rem)] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 flex flex-col p-6 gap-6 lg:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+            {" "}
             <div className="flex flex-col gap-4 text-slate-800 text-sm font-medium">
               {navLinks.map((link) => (
                 <Link
@@ -204,7 +205,6 @@ export default function Navbar() {
                   </Link>
                 ))}
             </div>
-
             <Button
               onClick={handleBookNow}
               className="w-full h-12 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl font-semibold shadow-md transition-colors text-base"

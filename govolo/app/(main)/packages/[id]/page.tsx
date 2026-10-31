@@ -1,5 +1,6 @@
 import PackageBookingDetails from "@/components/packages/PackageBookingDetails";
 import type { PackageApiResponse } from "@/components/packages/PackageBookingDetails";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -22,5 +23,9 @@ export default async function PackageBookingPage({
     // leave initialData as a failure; the client component shows the error state
   }
 
-  return <PackageBookingDetails initialData={initialData} />;
+  return (
+    <RequireAuth>
+      <PackageBookingDetails initialData={initialData} />
+    </RequireAuth>
+  );
 }
