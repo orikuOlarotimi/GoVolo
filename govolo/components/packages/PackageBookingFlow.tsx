@@ -26,6 +26,7 @@ import {
   toDateString,
 } from "@/lib/bookingHelpers";
 import { GoGift } from "react-icons/go";
+import { useBookingNotification } from "../../context/bookingNotificationContext";
 
 const CONTAINER = "container mx-auto px-4 py-16 max-w-6xl relative z-10";
 
@@ -77,6 +78,7 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
   const [adults, setAdults] = useState(Math.min(2, maxGuests));
   const [children, setChildren] = useState(0);
   const [selectedAddOns, setSelectedAddOns] = useState<number[]>([]);
+  const { notifyNewBooking } = useBookingNotification();
   const [errors, setErrors] = useState<{ checkIn?: string; checkOut?: string }>(
     {},
   );
@@ -216,6 +218,7 @@ export default function PackageBookingFlow({ pkg }: { pkg: PackageData }) {
       });
 
       setBookingId(res.booking._id);
+      notifyNewBooking();
       toast.success("Your booking has been created successfully.");
       router.push("/");
     } catch (error) {

@@ -20,13 +20,13 @@ import {
   Star,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import LoadingBar from "@/components/ui/loadingBar";
 import type { AddOn, Destination, RoomType } from "@/types/destination";
 import { ApiError } from "@/utils/apiClient";
-import { useApiFetch } from "@/utils/useApiFetch"; // adjust to your actual path
-
-
+import { useApiFetch } from "@/utils/useApiFetch";
+import {useBookingNotification} from "../../context/bookingNotificationContext"
 
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -93,6 +93,8 @@ export default function BookingDetails({
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<DestinationApiResponse>(initialData);
   const [loading, setLoading] = useState(false);
+
+  
 
   const retry = async () => {
     setLoading(true);
@@ -162,6 +164,8 @@ function BookingFlow({ destination }: { destination: Destination }) {
   const rooms: RoomType[] = destination.roomTypes;
   const addOnList: AddOn[] = destination.addOns ?? [];
   const maxGuests = destination.groupSize?.max;
+  const { notifyNewBooking } = useBookingNotification();
+  const router = useRouter();
   
 
   const [confirmed, setConfirmed] = useState<BookingSelection | null>(null);
@@ -198,6 +202,7 @@ function BookingFlow({ destination }: { destination: Destination }) {
   const email = guest.email.trim().toLowerCase();
   const phone = guest.phone.trim();
   const specialRequests = guest.specialRequests.trim();
+
 
   const canConfirm =
     fullName.length >= 2 &&
@@ -312,8 +317,10 @@ function BookingFlow({ destination }: { destination: Destination }) {
    requiresAuth: true,
  });
 
- setBookingId(res.booking._id);
+      setBookingId(res.booking._id);
+      notifyNewBooking();
       toast.success("Your booking has been created successfully.");
+      router.push("/");
     } catch (error) {
       if (error instanceof ApiError) {
         console.error("Booking failed:", error.message, error.data);
