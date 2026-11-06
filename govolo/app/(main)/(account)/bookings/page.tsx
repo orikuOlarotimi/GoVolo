@@ -111,7 +111,7 @@ export default function BookingsPage() {
   const hasMore = page < totalPages;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 py-5">
       <div>
         <h1 className="text-2xl font-bold text-[rgb(15,23,41)]">My Bookings</h1>
         {!loading && !error && total > 0 && (
@@ -149,9 +149,69 @@ export default function BookingsPage() {
       ) : (
         <>
           <ul className="space-y-4">
-            {bookings.map((b) => (
-              <BookingCard key={b._id} booking={b} />
-            ))}
+            {bookings.map((b) => {
+              const d = b.destinationSnapshot;
+              return (
+                <li key={b._id}>
+                  <Link
+                    href={`/bookings/${b._id}`}
+                    className="group flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-[rgb(225,231,239)] bg-white shadow-sm cursor-pointer transition-all hover:border-[rgb(14,168,230)]/50 hover:shadow-md"
+                  >
+                    <img
+                      src={d.image}
+                      alt={d.title}
+                      className="h-44 w-full sm:h-auto sm:w-48 shrink-0 object-cover"
+                    />
+
+                    <div className="flex-1 min-w-0 p-5 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium uppercase tracking-wide text-[rgb(99,111,129)]">
+                            {b.bookingType === "package"
+                              ? "Package"
+                              : "Destination"}
+                          </p>
+                          <h2 className="font-semibold text-[rgb(15,23,41)] truncate group-hover:text-[rgb(14,168,230)] transition-colors">
+                            {d.title}
+                          </h2>
+                          <p className="flex items-center gap-1 text-sm text-[rgb(99,111,129)]">
+                            <MapPin className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{d.location}</span>
+                          </p>
+                        </div>
+                        <span
+                          className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[b.status]}`}
+                        >
+                          {b.status}
+                        </span>
+                      </div>
+
+                      <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-[rgb(99,111,129)]">
+                        <span className="flex items-center gap-1.5">
+                          <Calendar className="h-4 w-4 text-[rgb(14,168,230)]" />
+                          {formatTripDate(b.checkIn)} –{" "}
+                          {formatTripDate(b.checkOut)} ·{" "}
+                          {plural(b.days, "night", "nights")}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Users className="h-4 w-4 text-[rgb(14,168,230)]" />
+                          {plural(b.guests.total, "guest", "guests")}
+                        </span>
+                      </div>
+
+                      <div className="flex items-end justify-between border-t border-[rgb(225,231,239)] pt-3">
+                        <p className="text-xs text-[rgb(99,111,129)]">
+                          Booked on {formatCreated(b.createdAt)}
+                        </p>
+                        <p className="text-lg font-bold text-[rgb(14,168,230)]">
+                          {money(b.totalPrice)}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
 
           {hasMore && (
@@ -173,63 +233,6 @@ export default function BookingsPage() {
         </>
       )}
     </div>
-  );
-}
-
-function BookingCard({ booking: b }: { booking: Booking }) {
-  const { destinationSnapshot: d } = b;
-
-  return (
-    <li className="flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-[rgb(225,231,239)] bg-white shadow-sm">
-      <img
-        src={d.image}
-        alt={d.title}
-        className="h-44 w-full sm:h-auto sm:w-48 shrink-0 object-cover"
-      />
-
-      <div className="flex-1 min-w-0 p-5 space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wide text-[rgb(99,111,129)]">
-              {b.bookingType === "package" ? "Package" : "Destination"}
-            </p>
-            <h2 className="font-semibold text-[rgb(15,23,41)] truncate">
-              {d.title}
-            </h2>
-            <p className="flex items-center gap-1 text-sm text-[rgb(99,111,129)]">
-              <MapPin className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{d.location}</span>
-            </p>
-          </div>
-          <span
-            className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[b.status]}`}
-          >
-            {b.status}
-          </span>
-        </div>
-
-        <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-[rgb(99,111,129)]">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-[rgb(14,168,230)]" />
-            {formatTripDate(b.checkIn)} – {formatTripDate(b.checkOut)} ·{" "}
-            {plural(b.days, "night", "nights")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Users className="h-4 w-4 text-[rgb(14,168,230)]" />
-            {plural(b.guests.total, "guest", "guests")}
-          </span>
-        </div>
-
-        <div className="flex items-end justify-between border-t border-[rgb(225,231,239)] pt-3">
-          <p className="text-xs text-[rgb(99,111,129)]">
-            Booked on {formatCreated(b.createdAt)}
-          </p>
-          <p className="text-lg font-bold text-[rgb(14,168,230)]">
-            {money(b.totalPrice)}
-          </p>
-        </div>
-      </div>
-    </li>
   );
 }
 

@@ -24,3 +24,23 @@ export type BookingsResponse = {
   count: number;
   bookings: Booking[];
 };
+
+export type BookingDetail = Booking & {
+  addOns: { name: string; price: number }[];
+  guestDetails: {
+    fullName: string;
+    email: string;
+    phone: string;
+    specialRequests?: string;
+  };
+  // null if the destination was deleted after booking
+  destination: { mainImage?: string; images?: string[] } | null;
+};
+
+export type AdminBooking = Booking & {
+  guestDetails: BookingDetail["guestDetails"];
+};
+
+export type AdminBookingsResponse = Omit<BookingsResponse, "bookings"> & {
+  bookings: AdminBooking[];
+};
