@@ -120,7 +120,7 @@ export default function BookingDetailPage() {
   const canDelete = b.status !== "confirmed" && b.paymentStatus !== "paid";
 
   return (
-    <div className="space-y-6 py-6">
+    <div className="space-y-6 py-6 ">
       {backLink}
 
       <div className="overflow-hidden rounded-2xl border border-[rgb(225,231,239)] bg-white shadow-sm">
@@ -231,10 +231,10 @@ export default function BookingDetailPage() {
       </div>
 
       {/* Guest details */}
-      <div className="rounded-2xl border border-[rgb(225,231,239)] bg-white p-6 space-y-2 text-sm">
+      <div className="rounded-2xl border border-[rgb(225,231,239)] bg-white p-3 md:p-6  space-y-2 text-sm ">
         <h2 className="font-semibold text-[rgb(15,23,41)]">Guest details</h2>
         <p className="text-[rgb(15,23,41)]">{b.guestDetails.fullName}</p>
-        <p className="flex items-center gap-2 text-[rgb(99,111,129)]">
+        <p className="flex items-center gap-2 text-[rgb(99,111,129)] text-[11px] md:text-sm">
           <Mail className="h-4 w-4 text-[rgb(14,168,230)]" />
           {b.guestDetails.email}
         </p>

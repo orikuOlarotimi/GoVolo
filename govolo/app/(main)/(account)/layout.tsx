@@ -35,7 +35,7 @@ export default function AccountLayout({
   return (
     <div className="flex-1 bg-[rgb(248,250,252)]">
       <div className={BANNER} />
-      <div className="container mx-auto flex max-w-7xl items-start gap-6 ">
+      <div className="container mx-auto flex max-w-7xl items-start gap-1 md:gap-6">
         <AccountSidebar />
         <main className="min-w-0 flex-1">{children}</main>
       </div>

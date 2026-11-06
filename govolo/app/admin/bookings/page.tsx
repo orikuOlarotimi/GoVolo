@@ -1,12 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Calendar, Mail, MapPin, Phone, Ticket, Users } from "lucide-react";
 import { useApiFetch } from "@/utils/useApiFetch";
 import { money, plural } from "@/lib/bookingHelpers";
 import { STATUS_STYLES, formatCreated, formatTripDate } from "@/lib/bookingUi";
-import type { AdminBookingsResponse, BookingStatus } from "@/types/booking";
-import type { AdminBooking } from "@/types/booking";
+import type {
+  AdminBooking,
+  AdminBookingsResponse,
+  BookingStatus,
+} from "@/types/booking";
 
 const LIMIT = 10;
 
@@ -100,10 +104,12 @@ export default function AdminBookingsPage() {
   const hasMore = page < totalPages;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="min-w-0 space-y-5 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[rgb(15,23,41)]">Bookings</h1>
-        <p className="text-sm text-[rgb(99,111,129)] mt-1">
+        <h1 className="text-xl font-bold text-[rgb(15,23,41)] sm:text-2xl">
+          Bookings
+        </h1>
+        <p className="mt-1 text-sm text-[rgb(99,111,129)]">
           People who have booked your destinations and packages.
           {!loading && !error && total > 0 && (
             <>
@@ -122,7 +128,7 @@ export default function AdminBookingsPage() {
             type="button"
             onClick={() => setFilter(f)}
             aria-pressed={filter === f}
-            className={`rounded-full border px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
+            className={`rounded-full border px-3 py-1.5 text-sm font-medium capitalize transition-colors sm:px-4 ${
               filter === f
                 ? "border-[rgb(14,168,230)] bg-[rgb(14,168,230)] text-white"
                 : "border-[rgb(225,231,239)] bg-white text-[rgb(99,111,129)] hover:bg-[rgb(242,245,247)]"
@@ -143,17 +149,17 @@ export default function AdminBookingsPage() {
           ))}
         </ul>
       ) : error ? (
-        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gray-100 px-6 py-16 text-center">
-          <p className="text-gray-500">{error}</p>
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-gray-100 px-4 py-12 text-center sm:px-6 sm:py-16">
+          <p className="break-words text-gray-500">{error}</p>
           <button
             onClick={loadFirstPage}
-            className="px-6 py-2.5 rounded-xl border-2 border-[rgb(13,162,231)] text-[rgb(13,162,231)] font-semibold hover:bg-[rgb(13,162,231)] hover:text-white transition-all duration-300"
+            className="rounded-xl border-2 border-[rgb(13,162,231)] px-6 py-2.5 font-semibold text-[rgb(13,162,231)] transition-all duration-300 hover:bg-[rgb(13,162,231)] hover:text-white"
           >
             Retry
           </button>
         </div>
       ) : bookings.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-[rgb(225,231,239)] bg-white px-6 py-16 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-2xl border border-[rgb(225,231,239)] bg-white px-4 py-12 text-center sm:px-6 sm:py-16">
           <Ticket className="h-10 w-10 text-[rgb(99,111,129)]" />
           <p className="text-[rgb(99,111,129)]">
             {filter === "all"
@@ -167,91 +173,99 @@ export default function AdminBookingsPage() {
             {bookings.map((b) => {
               const d = b.destinationSnapshot;
               return (
-                <li
-                  key={b._id}
-                  className="flex flex-col sm:flex-row overflow-hidden rounded-2xl border border-[rgb(225,231,239)] bg-white shadow-sm"
-                >
-                  <img
-                    src={d.image}
-                    alt={d.title}
-                    className="h-40 w-full sm:h-auto sm:w-44 shrink-0 object-cover"
-                  />
+                <li key={b._id} className="min-w-0">
+                  <Link
+                    href={`/admin/bookings/${b._id}`}
+                    className="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-[rgb(225,231,239)] bg-white shadow-sm transition-all hover:border-[rgb(14,168,230)]/50 hover:shadow-md sm:flex-row"
+                  >
+                    <img
+                      src={d.image}
+                      alt={d.title}
+                      className="h-40 w-full shrink-0 object-cover sm:h-auto sm:w-44"
+                    />
 
-                  <div className="flex-1 min-w-0 p-5 space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium uppercase tracking-wide text-[rgb(99,111,129)]">
-                          {b.bookingType === "package"
-                            ? "Package"
-                            : "Destination"}
-                        </p>
-                        <h2 className="font-semibold text-[rgb(15,23,41)] truncate">
-                          {d.title}
-                        </h2>
-                        <p className="flex items-center gap-1 text-sm text-[rgb(99,111,129)]">
-                          <MapPin className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{d.location}</span>
-                        </p>
+                    <div className="min-w-0 flex-1 space-y-3 p-4 sm:p-5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium uppercase tracking-wide text-[rgb(99,111,129)]">
+                            {b.bookingType === "package"
+                              ? "Package"
+                              : "Destination"}
+                          </p>
+                          <h2 className="truncate font-semibold text-[rgb(15,23,41)] transition-colors group-hover:text-[rgb(14,168,230)]">
+                            {d.title}
+                          </h2>
+                          <p className="flex min-w-0 items-center gap-1 text-sm text-[rgb(99,111,129)]">
+                            <MapPin className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{d.location}</span>
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 flex-col items-end gap-1">
+                          <span
+                            className={`rounded-full border px-2.5 py-1 text-xs font-semibold capitalize sm:px-3 ${STATUS_STYLES[b.status]}`}
+                          >
+                            {b.status}
+                          </span>
+                          <span className="text-xs capitalize text-[rgb(99,111,129)]">
+                            {b.paymentStatus}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1">
-                        <span
-                          className={`rounded-full border px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[b.status]}`}
-                        >
-                          {b.status}
-                        </span>
-                        <span className="text-xs capitalize text-[rgb(99,111,129)]">
-                          {b.paymentStatus}
-                        </span>
-                      </div>
-                    </div>
 
-                    {/* Who booked */}
-                    <div className="rounded-xl bg-[rgb(248,250,252)] p-3 text-sm space-y-1">
-                      <p className="font-medium text-[rgb(15,23,41)]">
-                        {b.guestDetails.fullName}
-                      </p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[rgb(99,111,129)]">
+                      {/* Who booked */}
+                      <div className="min-w-0 space-y-1 rounded-xl bg-[rgb(248,250,252)] p-3 text-sm">
+                        <p className="break-words font-medium text-[rgb(15,23,41)]">
+                          {b.guestDetails.fullName}
+                        </p>
+                        <div className="flex flex-col gap-1 text-[rgb(99,111,129)] sm:flex-row sm:flex-wrap sm:gap-x-4">
+                          <span className="flex min-w-0 items-start gap-1.5">
+                            <Mail className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[rgb(14,168,230)]" />
+                            <span className="min-w-0 break-all">
+                              {b.guestDetails.email}
+                            </span>
+                          </span>
+                          <span className="flex min-w-0 items-start gap-1.5">
+                            <Phone className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[rgb(14,168,230)]" />
+                            <span className="min-w-0 break-all">
+                              {b.guestDetails.phone}
+                            </span>
+                          </span>
+                        </div>
+                        {b.guestDetails.specialRequests && (
+                          <p className="break-words text-[rgb(99,111,129)]">
+                            <span className="font-medium text-[rgb(15,23,41)]">
+                              Requests:
+                            </span>{" "}
+                            {b.guestDetails.specialRequests}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-1 text-sm text-[rgb(99,111,129)] sm:flex-row sm:flex-wrap sm:gap-x-5">
+                        <span className="flex min-w-0 items-start gap-1.5">
+                          <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-[rgb(14,168,230)]" />
+                          <span className="min-w-0">
+                            {formatTripDate(b.checkIn)} –{" "}
+                            {formatTripDate(b.checkOut)} ·{" "}
+                            {plural(b.days, "night", "nights")}
+                          </span>
+                        </span>
                         <span className="flex items-center gap-1.5">
-                          <Mail className="h-3.5 w-3.5 text-[rgb(14,168,230)]" />
-                          {b.guestDetails.email}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Phone className="h-3.5 w-3.5 text-[rgb(14,168,230)]" />
-                          {b.guestDetails.phone}
+                          <Users className="h-4 w-4 shrink-0 text-[rgb(14,168,230)]" />
+                          {plural(b.guests.total, "guest", "guests")}
                         </span>
                       </div>
-                      {b.guestDetails.specialRequests && (
-                        <p className="text-[rgb(99,111,129)]">
-                          <span className="font-medium text-[rgb(15,23,41)]">
-                            Requests:
-                          </span>{" "}
-                          {b.guestDetails.specialRequests}
+
+                      <div className="flex items-end justify-between gap-3 border-t border-[rgb(225,231,239)] pt-3">
+                        <p className="min-w-0 text-xs text-[rgb(99,111,129)]">
+                          Booked on {formatCreated(b.createdAt)}
                         </p>
-                      )}
+                        <p className="shrink-0 text-lg font-bold text-[rgb(14,168,230)]">
+                          {money(b.totalPrice)}
+                        </p>
+                      </div>
                     </div>
-
-                    <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-[rgb(99,111,129)]">
-                      <span className="flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4 text-[rgb(14,168,230)]" />
-                        {formatTripDate(b.checkIn)} –{" "}
-                        {formatTripDate(b.checkOut)} ·{" "}
-                        {plural(b.days, "night", "nights")}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Users className="h-4 w-4 text-[rgb(14,168,230)]" />
-                        {plural(b.guests.total, "guest", "guests")}
-                      </span>
-                    </div>
-
-                    <div className="flex items-end justify-between border-t border-[rgb(225,231,239)] pt-3">
-                      <p className="text-xs text-[rgb(99,111,129)]">
-                        Booked on {formatCreated(b.createdAt)}
-                      </p>
-                      <p className="text-lg font-bold text-[rgb(14,168,230)]">
-                        {money(b.totalPrice)}
-                      </p>
-                    </div>
-                  </div>
+                  </Link>
                 </li>
               );
             })}
@@ -259,11 +273,15 @@ export default function AdminBookingsPage() {
 
           {hasMore && (
             <div className="flex flex-col items-center gap-2 pt-2">
-              {moreError && <p className="text-sm text-red-500">{moreError}</p>}
+              {moreError && (
+                <p className="break-words text-center text-sm text-red-500">
+                  {moreError}
+                </p>
+              )}
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="px-8 py-2.5 rounded-xl border border-[rgb(225,231,239)] bg-white font-semibold text-[rgb(15,23,41)] hover:bg-[rgb(242,245,247)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-xl border border-[rgb(225,231,239)] bg-white px-8 py-2.5 font-semibold text-[rgb(15,23,41)] transition-colors hover:bg-[rgb(242,245,247)] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loadingMore
                   ? "Loading…"
