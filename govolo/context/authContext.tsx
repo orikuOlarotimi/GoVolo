@@ -75,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     [setAccessToken],
   );
+  const updateUser = useCallback((next: User) => setUser(next), []);
 
   const logout = useCallback(async () => {
     try {
@@ -137,6 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         setAccessToken,
         refreshAccessToken,
+        updateUser,
       }}
     >
       {children}

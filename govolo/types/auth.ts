@@ -19,4 +19,5 @@ export type AuthContextType = {
   logout: () => void;
   setAccessToken: (token: string | null) => void;
   refreshAccessToken: () => Promise<string | null>;
+  updateUser: (user: User) => void; // NEW
 };
