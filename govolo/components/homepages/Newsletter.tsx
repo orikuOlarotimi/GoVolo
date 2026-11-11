@@ -1,6 +1,59 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import Section from "../animationComponents/Section";
+import { Loader2 } from "lucide-react";
+
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+// Same rule as the backend, so mistakes are caught before a request is sent
+const EMAIL_REGEX =
+  /^[a-z0-9._%+-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*\.[a-z]{2,}$/i;
+
+type Status = "idle" | "submitting" | "success" | "error";
+
 const Newsletter = () => {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<Status>("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status === "submitting") return;
+
+    const normalized = email.trim().toLowerCase();
+    if (normalized.length > 254 || !EMAIL_REGEX.test(normalized)) {
+      setStatus("error");
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("submitting");
+    setMessage("");
+    try {
+      const res = await fetch(`${API_URL}/api/newsletter/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalized }),
+      });
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok || !data?.success) {
+        setStatus("error");
+        setMessage(data?.message || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setStatus("success");
+      setMessage(data.message);
+      setEmail("");
+    } catch {
+      setStatus("error");
+      setMessage(
+        "We couldn't reach the server. Check your connection and try again.",
+      );
+    }
+  };
   return (
     <Section>
       <div className="px-6 py-[96px] flex items-center justify-center ">
@@ -118,8 +171,16 @@ const Newsletter = () => {
                 Travel Inspiration
               </div>
             </div>
-            <form className=" max-w-[450px] w-full">
-              <div className="flex items-center gap-2 rounded-2xl border-2 bg-muted/60 px-4 py-2 transition-all duration-200 border-border">
+            <form
+              noValidate
+              onSubmit={handleSubmit}
+              className=" max-w-[450px] w-full"
+            >
+              <div
+                className={`flex items-center gap-2 rounded-2xl border-2 bg-muted/60 px-4 py-2 transition-all duration-200 ${
+                  status === "error" ? "border-red-400" : "border-border"
+                }`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -138,29 +199,65 @@ const Newsletter = () => {
 
                 <input
                   type="email"
+                  autoComplete="email"
+                  maxLength={254}
                   placeholder="Enter your email address"
+                  value={email}
+                  disabled={status === "submitting"}
+                  aria-invalid={status === "error"}
+                  aria-label="Email address"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status === "error" || status === "success") {
+                      setStatus("idle");
+                      setMessage("");
+                    }
+                  }}
                   className="flex-1  min-w-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none py-1.5"
-                  required
                 />
-                <button className="bg-[#20c997] text-white text-semibold hover:scale-105 transition-all hover:shadow-lg cursor-pointer duration-300 flex items-center gap-2 px-5 py-2 text-sm rounded-xl group/btn">
-                  <p className="hidden sm:inline">Subscribe</p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-send h-3.5 w-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"
-                  >
-                    <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
-                    <path d="m21.854 2.147-10.94 10.939"></path>
-                  </svg>
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  aria-label="Subscribe"
+                  className="bg-[#20c997] text-white text-semibold hover:scale-105 transition-all hover:shadow-lg cursor-pointer duration-300 flex items-center gap-2 px-5 py-2 text-sm rounded-xl group/btn disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+                >
+                  <p className="hidden sm:inline">
+                    {status === "submitting" ? "Subscribing…" : "Subscribe"}
+                  </p>
+                  {status === "submitting" ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="lucide lucide-send h-3.5 w-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"
+                    >
+                      <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
+                      <path d="m21.854 2.147-10.94 10.939"></path>
+                    </svg>
+                  )}
                 </button>
               </div>
+
+              {message && (
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className={`mt-3 text-sm text-center ${
+                    status === "error" ? "text-red-500" : "text-green-600"
+                  }`}
+                >
+                  {message}
+                </p>
+              )}
+
               <p className="text-xs text-muted-foreground mt-3 text-center">
                 No spam, ever. Unsubscribe anytime.{" "}
                 <span className="text-[rgb(13,162,231)] underline underline-offset-2 cursor-pointer">
