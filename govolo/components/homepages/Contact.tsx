@@ -97,7 +97,6 @@ export default function Contact() {
       toast.success(res.message || "Your message has been sent.");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch (error) {
-      console.error("Contact message failed:", error);
       toast.error(
         error instanceof Error ? error.message : "Something went wrong",
       );

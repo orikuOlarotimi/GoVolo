@@ -72,20 +72,7 @@ export default function PostPackageForm() {
     loadDestinations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user?.email, pathname]);
-  useEffect(() => {
-    console.log("DESTINATIONS COMPONENT MOUNTED");
 
-    return () => {
-      console.log("DESTINATIONS COMPONENT UNMOUNTED");
-    };
-  }, []);
-  useEffect(() => {
-    console.log("DESTINATIONS EFFECT RAN");
-
-    return () => {
-      console.log("DESTINATIONS EFFECT CLEANUP");
-    };
-  }, []);
 
   const selected = destinations.find((d) => d._id === selectedId) ?? null;
 

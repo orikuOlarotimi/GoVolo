@@ -34,20 +34,6 @@ const TravelCard: React.FC<TravelCardProps> = ({
   backgroundColor,
   tag,
 }) => {
-  console.log({
-    _id,
-    label,
-    title,
-    price,
-    duration,
-    rating,
-    reviews,
-    people,
-    features,
-    buttonText,
-    backgroundColor,
-    tag,
-  });
   return (
     <div className="w-full rounded-3xl overflow-hidden shadow-lg bg-white hover:-translate-y-2 transition-all duration-300 hover:shadow-xl hover:border border-[rgb(56,189,248)]">
       {/* Top Section */}
