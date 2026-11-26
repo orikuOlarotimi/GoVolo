@@ -1,9 +1,14 @@
 export type Rating = { average: number; count: number };
 export type GroupSize = { min: number; max: number };
-export type RoomType = { name: string; description?: string; price: number };
+export type RoomType = {
+  name: string;
+  description?: string;
+  price: number;
+  _id: string;
+};
 export type TripHighlight = { title: string; description: string };
 export type ItineraryDay = { day: number; title: string; description?: string };
-export type AddOn = { name: string; price: number; unit?: string };
+export type AddOn = { _id?: string; name: string; price: number; unit?: string };
 export type Creator = {
   fullName?: string;
   lastName?: string;

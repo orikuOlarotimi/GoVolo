@@ -7,13 +7,15 @@ import { Plane, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import { CiShoppingTag } from "react-icons/ci";
+import { useBookingNotification } from "@/context/bookingNotificationContext";
 
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Destinations", path: "/destinations" },
   { name: "Packages", path: "/packages" },
   { name: "About", path: "/about" },
-  { name: "Blog", path: "/blog" },
+  { name: "Blog", path: "/blogs" },
   { name: "Contact", path: "/contact" },
 ];
 
@@ -25,6 +27,8 @@ export default function Navbar() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const { hasNewBooking, clearNewBooking } = useBookingNotification();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,19 +66,6 @@ export default function Navbar() {
   const handleBookNow = () => {
     setIsMobileMenuOpen(false);
 
-    if (!user) {
-      router.push("/login?redirect=/destinations");
-      return;
-    }
-
-     if (user.status !== "verified") {
-       toast.error(
-         "Please verify your account to continue. Log in again to receive a new code.",
-       );
-       router.push("/login?redirect=/destinations");
-       return;
-     }
-
      router.push("/destinations");
   };
 
@@ -98,7 +89,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+        <div className="hidden lg:flex items-center gap-5 xl:gap-8 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.name}
@@ -111,7 +102,7 @@ export default function Navbar() {
         </div>
 
         {/* Right side: Login/Account + Book Now grouped together */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden lg:flex items-center gap-4">
           {loading ? (
             <div
               className={`h-9 w-20 animate-pulse rounded-md ${
@@ -131,7 +122,15 @@ export default function Navbar() {
                 alt={user.firstName}
                 className="h-8 w-8 rounded-full object-cover"
               />
-              {user.firstName}
+              <span className="relative">
+                {hasNewBooking && (
+                  <CiShoppingTag
+                    aria-label="New booking"
+                    className="absolute -top-5 left-1/2 -translate-x-1/2 h-5 w-5 text-red-500"
+                  />
+                )}
+                {user.firstName}
+              </span>
             </Link>
           ) : (
             <Link
@@ -152,10 +151,14 @@ export default function Navbar() {
 
         {/* Mobile Hamburger Toggle */}
         <button
-          className="md:hidden p-2 z-50 focus:outline-none"
+          className="lg:hidden p-2 z-50 focus:outline-none relative"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle Menu"
         >
+          {user && hasNewBooking && (
+            <CiShoppingTag className="absolute -top-3 left-1/2 -translate-x-1/2 h-5 w-5 text-red-500" />
+          )}
+
           {isMobileMenuOpen ? (
             <X
               className={`h-7 w-7 ${isScrolled ? "text-slate-900" : "text-white"}`}
@@ -169,7 +172,8 @@ export default function Navbar() {
 
         {/* Mobile Dropdown Menu Card */}
         {isMobileMenuOpen && (
-          <div className="absolute top-[120%] left-0 right-0 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 flex flex-col p-6 gap-6 md:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+          <div className="absolute top-[120%] left-0 right-0 max-h-[calc(100vh-7rem)] overflow-y-auto bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 flex flex-col p-6 gap-6 lg:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+            {" "}
             <div className="flex flex-col gap-4 text-slate-800 text-sm font-medium">
               {navLinks.map((link) => (
                 <Link
@@ -203,8 +207,24 @@ export default function Navbar() {
                     Log in
                   </Link>
                 ))}
-            </div>
 
+              {!loading && user && (
+                <Link
+                  href="/bookings"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    clearNewBooking();
+                  }}
+                  className="flex items-center justify-between hover:text-[#20c997] transition-colors pb-3 border-b border-slate-100"
+                >
+                  Bookings
+                  {hasNewBooking && (
+                    <CiShoppingTag className="h-5 w-5 text-red-500" />
+                  )}
+                </Link>
+              )}
+              
+            </div>
             <Button
               onClick={handleBookNow}
               className="w-full h-12 bg-[#20c997] hover:bg-[#1ba87e] text-white rounded-xl font-semibold shadow-md transition-colors text-base"

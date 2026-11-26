@@ -31,7 +31,7 @@ export default async function Home() {
     fetch(`${API_URL}/api/destinations/top-destinations`, {
       cache: "no-store",
     }),
-    fetch(`${API_URL}/api/booking?limit=3`, {
+    fetch(`${API_URL}/api/packages?limit=3`, {
       cache: "no-store",
     }),
     fetch(`${API_URL}/api/testimonial?limit=4`, {

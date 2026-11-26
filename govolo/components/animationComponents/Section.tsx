@@ -1,24 +1,55 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+
+import { useEffect, useId, useRef, useState } from "react";
 
 const Section = ({ children }: { children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const id = useId();
+
+  const storageKey = `section-animated-${id}`;
+
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    // Check whether this page load is a browser refresh
+    const navigation = performance.getEntriesByType(
+      "navigation",
+    )[0] as PerformanceNavigationTiming;
+
+    if (navigation?.type === "reload") {
+      sessionStorage.removeItem(storageKey);
+    }
+
+    // If animation has already played, show immediately
+    if (sessionStorage.getItem(storageKey) === "true") {
+      setVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
+
+          // Remember that this section has animated
+          sessionStorage.setItem(storageKey, "true");
+
+          observer.unobserve(element);
         }
       },
-      { threshold: 0.2 },
+      {
+        threshold: 0.2,
+      },
     );
 
-    if (ref.current) observer.observe(ref.current);
+    observer.observe(element);
 
     return () => observer.disconnect();
-  }, []);
+  }, [storageKey]);
 
   return (
     <div

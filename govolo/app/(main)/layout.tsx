@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
+import { BookingNotificationProvider } from "@/context/bookingNotificationContext";
 
 export const metadata: Metadata = {
   title: "GoVolo - Travel Booking Platform",
@@ -13,10 +14,12 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-full flex flex-col">
-      <Navbar />
-      {children}
-      <Footer />
-    </div>
+    <BookingNotificationProvider>
+      <div className="min-h-full flex flex-col">
+        <Navbar />
+        {children}
+        <Footer />
+      </div>
+    </BookingNotificationProvider>
   );
 }

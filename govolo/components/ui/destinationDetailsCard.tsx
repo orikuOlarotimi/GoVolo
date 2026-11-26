@@ -4,6 +4,7 @@ import { useState } from "react";
 import ItineraryTab from "../../components/ui/ItineraryTab";
 import ReviewsTab from "../../components/ui/ReviewsTab";
 import type { Destination, Review } from "@/types/destination";
+import Link from "next/link";
 
 type DestinationDetailsCardProps = {
   data: Destination;
@@ -343,7 +344,7 @@ const DestinationDetailsCard = ({
                         ${pricePerPerson}
                       </span>
                       <span className="text-[rgb(99,111,129)] text-sm mb-1">
-                        / night for standard a room 
+                        / night for standard a room
                       </span>
                     </div>
                     <p className="text-xs text-[rgb(99,111,129)] mb-5">
@@ -383,8 +384,6 @@ const DestinationDetailsCard = ({
                           </p>
                         </div>
                       </div> */}
-
-
 
                       {/* <div className="flex items-center justify-between border border-border rounded-xl px-4 py-3">
                         <div className="flex items-center gap-2">
@@ -450,8 +449,8 @@ const DestinationDetailsCard = ({
                         <span className="text-[rgb(14,168,230)]">${total}</span>
                       </div>
                     </div> */}
-                    <a
-                      href="/BookTripPage"
+                    <Link
+                      href={`/destinations/${data._id}/booking`}
                       className="bg-[linear-gradient(135deg,rgb(13,165,231),rgb(33,196,93))] w-full flex items-center justify-center gap-2 group mb-3 px-6 py-3 font-semibold transition-all duration-300 ease-in-out text-white  hover:scale-105 rounded-[10px] "
                     >
                       Book This Trip
@@ -470,7 +469,7 @@ const DestinationDetailsCard = ({
                         <path d="M5 12h14"></path>
                         <path d="m12 5 7 7-7 7"></path>
                       </svg>
-                    </a>
+                    </Link>
                     <p className="text-center text-xs text-[rgb(99,111,129)]">
                       Free cancellation up to 30 days before
                     </p>

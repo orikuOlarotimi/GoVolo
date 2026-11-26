@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link"
 type post = {
   id: string;
   img: string;
@@ -69,24 +70,26 @@ const PostCard = ({ img, tag, title, para, date, time }: post) => {
         <p className="text-xs leading-relaxed line-clamp-2 text-[rgb(101,117,139)] text-start">
           {para}
         </p>
-        <div className="flex items-center gap-1.5 text-[rgb(13,162,231)] text-xs font-semibold  mt-3 opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100  transition-all duration-200">
-          Read More{" "}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="lucide lucide-arrow-right h-3.5 w-3.5"
-          >
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </div>
+        <Link href="/blogs">
+          <div className=" cursor-pointer flex items-center gap-1.5 text-[rgb(13,162,231)] text-xs font-semibold  mt-3 opacity-0 translate-y-1 group-hover:translate-y-0 group-hover:opacity-100  transition-all duration-200">
+            Read More{" "}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="lucide lucide-arrow-right h-3.5 w-3.5"
+            >
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </div>
+        </Link>
       </div>
     </div>
   );
